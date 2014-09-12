@@ -1,0 +1,982 @@
+3.2.19 (Media Mark)
+219c14056da2e088355be727c3a1af4b93788e55
+o:Sass::Tree::RootNode
+:@template"ﬁ:// Foundation by ZURB
+// foundation.zurb.com
+// Licensed under MIT Open Source
+
+@import "global";
+@import "type";
+
+// Off Canvas Tab Bar Variables
+$include-html-off-canvas-classes: $include-html-classes !default;
+
+$tabbar-bg: $oil !default;
+$tabbar-height: rem-calc(45) !default;
+$tabbar-icon-width: $tabbar-height !default;
+$tabbar-line-height: $tabbar-height !default;
+$tabbar-color: $white !default;
+$tabbar-middle-padding: 0 rem-calc(10) !default;
+
+// Off Canvas Divider Styles
+$tabbar-left-section-border: solid 1px scale-color($tabbar-bg, $lightness: -50%) !default;
+$tabbar-right-section-border: $tabbar-left-section-border;
+
+
+// Off Canvas Tab Bar Headers
+$tabbar-header-color: $white !default;
+$tabbar-header-weight: $font-weight-bold !default;
+$tabbar-header-line-height: $tabbar-height !default;
+$tabbar-header-margin: 0 !default;
+
+// Off Canvas Menu Variables
+$off-canvas-width: rem-calc(250) !default;
+$off-canvas-bg: $oil !default;
+$off-canvas-bg-hover: scale-color($tabbar-bg, $lightness: -30%) !default;
+
+// Off Canvas Menu List Variables
+$off-canvas-label-padding: 0.3rem rem-calc(15) !default;
+$off-canvas-label-color: $aluminum !default;
+$off-canvas-label-text-transform: uppercase !default;
+$off-canvas-label-font-size: rem-calc(12) !default;
+$off-canvas-label-font-weight: $font-weight-bold !default;
+$off-canvas-label-bg: $tuatara !default;
+$off-canvas-label-border-top: 1px solid scale-color($off-canvas-label-bg, $lightness: 14%) !default;
+$off-canvas-label-border-bottom: none !default;
+$off-canvas-label-margin:0 !default;
+$off-canvas-link-padding: rem-calc(10, 15) !default;
+$off-canvas-link-color: rgba($white, 0.7) !default;
+$off-canvas-link-border-bottom: 1px solid scale-color($off-canvas-bg, $lightness: -25%) !default;
+$off-canvas-back-bg: #444 !default;
+$off-canvas-back-border-top: $off-canvas-label-border-top !default;
+$off-canvas-back-border-bottom: $off-canvas-label-border-bottom !default;
+$off-canvas-back-hover-bg: scale-color($off-canvas-back-bg, $lightness: -30%) !default;
+$off-canvas-back-hover-border-top: 1px solid scale-color($off-canvas-label-bg, $lightness: 14%) !default;
+$off-canvas-back-hover-border-bottom: none !default;
+
+// Off Canvas Menu Icon Variables
+$tabbar-menu-icon-color: $white !default;
+$tabbar-menu-icon-hover: scale-color($tabbar-menu-icon-color, $lightness: -30%) !default;
+
+$tabbar-menu-icon-text-indent: rem-calc(35) !default;
+$tabbar-menu-icon-width: $tabbar-icon-width !default;
+$tabbar-menu-icon-height: $tabbar-height !default;
+$tabbar-menu-icon-padding: 0 !default;
+
+$tabbar-hamburger-icon-width: rem-calc(16) !default;
+$tabbar-hamburger-icon-left: false !default;
+$tabbar-hamburger-icon-top: false !default;
+$tabbar-hamburger-icon-thickness: 1px !default;
+$tabbar-hamburger-icon-gap: 6px !default;
+
+// Off Canvas Back-Link Overlay
+$off-canvas-overlay-transition: background 300ms ease !default;
+$off-canvas-overlay-cursor: pointer !default;
+$off-canvas-overlay-box-shadow: -4px 0 4px rgba($black, 0.5), 4px 0 4px rgba($black, 0.5) !default;
+$off-canvas-overlay-background: rgba($white, 0.2) !default;
+$off-canvas-overlay-background-hover: rgba($white, 0.05) !default;
+
+// Transition Variables
+$menu-slide: "transform 500ms ease" !default;
+
+
+// MIXINS
+// Remove transition flicker on phones
+@mixin kill-flicker {
+  // -webkit-transform: translateZ(0x);
+  -webkit-backface-visibility: hidden;
+}
+
+// Basic properties for the content wraps
+@mixin wrap-base {
+  position: relative;
+  width: 100%;
+}
+
+@mixin translate3d($tx,$ty,$tz) {
+      -ms-transform: translate($tx,$ty);
+  -webkit-transform: translate3d($tx,$ty,$tz);
+     -moz-transform: translate3d($tx,$ty,$tz);
+      -ms-transform: translate3d($tx,$ty,$tz);
+       -o-transform: translate3d($tx,$ty,$tz);
+          transform: translate3d($tx,$ty,$tz)
+}
+
+// basic styles for off-canvas menu container
+@mixin off-canvas-menu($position) {
+  @include kill-flicker;
+  * { @include kill-flicker; }
+  width: $off-canvas-width;
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: $off-canvas-bg;
+  z-index: 1001;
+  box-sizing: content-box;
+  transition: transform 500ms ease 0s;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+
+  @if $position == left {
+    @include translate3d(-100.5%,0,0);
+    left: 0;
+  }
+  @if $position == right {
+    @include translate3d(100.5%,0,0);
+    right: 0;
+  }
+}
+
+// OFF CANVAS WRAP
+// Wrap visible content and prevent scroll bars
+@mixin off-canvas-wrap {
+  @include kill-flicker;
+  @include wrap-base;
+  overflow: hidden;
+  &.move-right,
+  &.move-left { min-height: 100%; -webkit-overflow-scrolling: touch; }
+}
+
+// INNER WRAP
+// Main content area that moves to reveal the off-canvas nav
+@mixin inner-wrap {
+  @include kill-flicker;
+  @include wrap-base;
+  @include clearfix;
+  -webkit-transition: -webkit-#{$menu-slide};
+  -moz-transition: -moz-#{$menu-slide};
+  -ms-transition: -ms-#{$menu-slide};
+  -o-transition: -o-#{$menu-slide};
+  transition: #{$menu-slide};
+}
+
+// TAB BAR
+// This is the tab bar base
+@mixin tab-bar-base {
+  @include kill-flicker;
+
+  // base styles
+  background: $tabbar-bg;
+  color: $tabbar-color;
+  height: $tabbar-height;
+  line-height: $tabbar-line-height;
+
+  // make sure it's below the .exit-off-canvas link
+  position: relative;
+  // z-index: 999;
+
+  // Typography
+  h1,h2,h3,h4,h5,h6 {
+    color: $tabbar-header-color;
+    font-weight: $tabbar-header-weight;
+    line-height: $tabbar-header-line-height;
+    margin: $tabbar-header-margin;
+  }
+  h1,h2,h3,h4 { font-size: $h5-font-size; }
+}
+
+// SMALL SECTIONS
+// These are small sections on the left and right that contain the off-canvas toggle buttons;
+@mixin tabbar-small-section($position) {
+  width: $tabbar-icon-width;
+  height: $tabbar-height;
+  position: absolute;
+  top: 0;
+  @if $position == left {
+    border-right: $tabbar-left-section-border;
+    // box-shadow: 1px 0 0 scale-color($tabbar-bg, $lightness: 13%);
+    left: 0;
+  }
+  @if $position == right {
+    border-left: $tabbar-right-section-border;
+    // box-shadow: -1px 0 0 scale-color($tabbar-bg, $lightness: -50%);
+    right:0;
+  }
+}
+
+@mixin tab-bar-section {
+  padding: $tabbar-middle-padding;
+  position: absolute;
+  text-align: center;
+  height: $tabbar-height;
+  top: 0;
+  @media #{$medium-up} {
+    &.left, &.right { text-align: left; }
+  }
+
+  // still need to make these non-presentational
+  &.left {
+    left: 0;
+    right: $tabbar-icon-width;
+  }
+  &.right {
+    left: $tabbar-icon-width;
+    right: 0;
+  }
+  &.middle {
+    left: $tabbar-icon-width;
+    right: $tabbar-icon-width;
+  }
+}
+
+// OFF CANVAS LIST
+// This is the list of links in the off-canvas menu
+@mixin off-canvas-list {
+  list-style-type: none;
+  padding:0;
+  margin:0;
+
+  li {
+    label {
+      display: block;
+      padding: $off-canvas-label-padding;
+      color: $off-canvas-label-color;
+      text-transform: $off-canvas-label-text-transform;
+      font-size: $off-canvas-label-font-size;
+      font-weight: $off-canvas-label-font-weight;
+      background: $off-canvas-label-bg;
+      border-top: $off-canvas-label-border-top;
+      border-bottom: $off-canvas-label-border-bottom;
+      margin: $off-canvas-label-margin;
+    }
+    a {
+      display: block;
+      padding: $off-canvas-link-padding;
+      color: $off-canvas-link-color;
+      border-bottom: $off-canvas-link-border-bottom;
+      transition: background 300ms ease;
+      &:hover {
+        background: $off-canvas-bg-hover;
+      }
+    }
+  }
+
+}
+
+// BACK LINK
+// This is an overlay that, when clicked, will toggle off the off canvas menu
+@mixin back-link {
+    @include kill-flicker;
+
+    transition: $off-canvas-overlay-transition;
+    cursor: $off-canvas-overlay-cursor;
+    box-shadow: $off-canvas-overlay-box-shadow;
+
+    // fill the screen
+    display: block;
+    position: absolute;
+    background: $off-canvas-overlay-background;
+    top: 0;
+    bottom: 0;
+    left:0;
+    right:0;
+    z-index: 1002;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+
+    @media #{$medium-up} {
+      &:hover {
+        background: $off-canvas-overlay-background-hover;
+      }
+    }
+}
+
+//
+// DEFAULT CLASSES
+//
+@include exports("offcanvas") {
+  @if $include-html-off-canvas-classes {
+
+    .off-canvas-wrap { @include off-canvas-wrap; }
+    .inner-wrap { @include inner-wrap; }
+
+    .tab-bar { @include tab-bar-base; }
+
+    .left-small { @include tabbar-small-section($position: left); }
+    .right-small { @include tabbar-small-section($position: right); }
+
+    .tab-bar-section { @include tab-bar-section; }
+
+    // MENU BUTTON
+    // This is a little bonus. You don't need it for off canvas to work. Mixins to be written in the future.
+    .tab-bar .menu-icon {
+      text-indent: $tabbar-menu-icon-text-indent;
+      width: $tabbar-menu-icon-width;
+      height: $tabbar-menu-icon-height;
+      display: block;
+      padding: $tabbar-menu-icon-padding;
+      color: $tabbar-menu-icon-color;
+      position: relative;
+      transform: translate3d(0,0,0);
+
+      // @include for the hamburger menu-icon
+      //
+      // Arguments as follows: ($width, $left, $top, $thickness, $gap, $color, $hover-color)
+      // $width - Width of hamburger icon in rem Default: $tabbar-hamburger-icon-width.
+      // $left - If false, icon will be centered horizontally || explicitly set value in rem Default: $tabbar-hamburger-icon-left= False
+      // $top - If false, icon will be centered vertically || explicitly set value in rem Default: = False
+      // $thickness - thickness of lines in hamburger icon, set value in px Default: $tabbar-hamburger-icon-thickness = 1px
+      // $gap - spacing between the lines in hamburger icon, set value in px Default: $tabbar-hamburger-icon-gap = 6px
+      // $color - icon color Default: $tabbar-menu-icon-color
+      // $hover-color - icon color when hovered Default: $tabbar-menu-icon-hover
+      // $offcanvas - Set to true
+      @include hamburger($tabbar-hamburger-icon-width, $tabbar-hamburger-icon-left, $tabbar-hamburger-icon-top, $tabbar-hamburger-icon-thickness, $tabbar-hamburger-icon-gap, $tabbar-menu-icon-color, $tabbar-menu-icon-hover, true)
+    }
+
+    .left-off-canvas-menu { @include off-canvas-menu($position: left); }
+    .right-off-canvas-menu { @include off-canvas-menu($position: right); }
+
+    ul.off-canvas-list { @include off-canvas-list; }
+
+
+    // ANIMATION CLASSES
+    // These classes are added with JS and trigger the actual animation.
+    .move-right {
+      > .inner-wrap {
+        @include translate3d($off-canvas-width,0,0);
+      }
+      .exit-off-canvas { @include back-link;}
+    }
+
+    .move-left {
+      > .inner-wrap {
+        @include translate3d(-($off-canvas-width),0,0);
+
+      }
+      .exit-off-canvas { @include back-link; }
+    }
+    .offcanvas-overlap {
+      .left-off-canvas-menu, .right-off-canvas-menu {
+        -ms-transform: none;
+        -webkit-transform: none;
+        -moz-transform: none;
+        -o-transform: none;
+        transform: none;
+        z-index: 1003;
+      }
+      .exit-off-canvas { @include back-link; }
+    }
+    .offcanvas-overlap-left {
+      .right-off-canvas-menu {
+        -ms-transform: none;
+        -webkit-transform: none;
+        -moz-transform: none;
+        -o-transform: none;
+        transform: none;
+        z-index: 1003;
+      }
+      .exit-off-canvas { @include back-link; }
+    }
+    .offcanvas-overlap-right {
+      .left-off-canvas-menu {
+        -ms-transform: none;
+        -webkit-transform: none;
+        -moz-transform: none;
+        -o-transform: none;
+        transform: none;
+        z-index: 1003;
+      }
+      .exit-off-canvas { @include back-link; }
+    }
+
+    // Older browsers
+    .no-csstransforms {
+      .left-off-canvas-menu { left: -($off-canvas-width); }
+      .right-off-canvas-menu { right: -($off-canvas-width); }
+
+      .move-left > .inner-wrap { right: $off-canvas-width; }
+      .move-right > .inner-wrap { left: $off-canvas-width; }
+    }
+
+  }
+}
+
+//
+// Off-Canvas Submenu Classes
+//
+@mixin off-canvas-submenu($position) {
+  @include kill-flicker;
+  * { @include kill-flicker; }
+  width: $off-canvas-width;
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: $off-canvas-bg;
+  z-index: 1002;
+  box-sizing: content-box;
+  -webkit-overflow-scrolling: touch;
+  @if $position == left {
+    @include translate3d(-100%,0,0);
+    left: 0;
+  }
+  @if $position == right {
+    @include translate3d(100%,0,0);
+    right: 0;
+  }
+  -webkit-transition: -webkit-#{$menu-slide};
+  -moz-transition: -moz-#{$menu-slide};
+  -ms-transition: -ms-#{$menu-slide};
+  -o-transition: -o-#{$menu-slide};
+  transition: #{$menu-slide};
+
+  //back button style like label
+  .back > a {
+    padding: $off-canvas-label-padding;
+    color: $off-canvas-label-color;
+    text-transform: $off-canvas-label-text-transform;
+    font-weight: $off-canvas-label-font-weight;
+    background: $off-canvas-back-bg;
+    border-top: $off-canvas-back-border-top;
+    border-bottom: $off-canvas-back-border-bottom;
+    &:hover {
+    	background: $off-canvas-back-hover-bg;
+    	border-top: $off-canvas-back-hover-border-top;
+    	border-bottom: $off-canvas-back-hover-border-bottom;
+    }
+    margin: $off-canvas-label-margin;
+    @if $position == right {
+      @if $text-direction == rtl {
+        &:before {
+          @include icon-double-arrows($position: left);
+        }
+      } @else {
+        &:after {
+          @include icon-double-arrows($position: right);
+        }
+      }
+    }
+    @if $position == left {
+      @if $text-direction == rtl {
+        &:after {
+          @include icon-double-arrows($position: right);
+        }
+      } @else {
+        &:before {
+          @include icon-double-arrows($position: left);
+        }
+      }
+    }
+  }
+}
+//Left double angle quote or Right double angle quote chars
+@mixin icon-double-arrows ($position){
+  @if $position == left {
+    content: "\AB";
+    @if $text-direction == rtl {
+      margin-left: 0.5rem;
+    } @else {
+      margin-right: 0.5rem;
+    }
+  }
+  @if $position == right {
+    content: "\BB";
+    @if $text-direction == rtl {
+      margin-right: 0.5rem;
+    } @else {
+      margin-left: 0.5rem;
+    }
+  }
+  display: inline;
+}
+
+@if $include-html-off-canvas-classes {
+  .left-submenu {
+    @include off-canvas-submenu($position: left);
+    &.move-right {
+      @include translate3d(0%,0,0);
+    }
+  }
+
+  .right-submenu {
+    @include off-canvas-submenu($position: right);
+    &.move-left {
+      @include translate3d(0%,0,0);
+    }
+  }
+
+  @if $text-direction == rtl {
+    .left-off-canvas-menu ul.off-canvas-list li.has-submenu > a:before {
+      @include icon-double-arrows($position: left);
+    }
+    .right-off-canvas-menu ul.off-canvas-list li.has-submenu > a:after {
+      @include icon-double-arrows($position: right);
+    }
+  } @else {
+    .left-off-canvas-menu ul.off-canvas-list li.has-submenu > a:after {
+       @include icon-double-arrows($position: right);
+    }
+    .right-off-canvas-menu ul.off-canvas-list li.has-submenu > a:before {
+       @include icon-double-arrows($position: left);
+    }
+  }
+}
+:@has_childrenT:@options{ :@children[^o:Sass::Tree::CommentNode
+:
+@type:silent:@value["V/* Foundation by ZURB
+ * foundation.zurb.com
+ * Licensed under MIT Open Source */;@;	[ :
+@lineio:Sass::Tree::ImportNode:@imported_filename"global;0;@;	[ ;i
+:@imported_file0o;;"	type;0;@;	[ ;i;0o;
+
+;;;["'/* Off Canvas Tab Bar Variables */;@;	[ ;io:Sass::Tree::VariableNode:
+@expro:Sass::Script::Variable	:
+@name"include-html-classes;@:@underscored_name"include_html_classes;i;"$include-html-off-canvas-classes;@;	[ ;i:@guarded"!defaulto;;o;	;"oil;@;"oil;i;"tabbar-bg;@;	[ ;i;"!defaulto;;o:Sass::Script::Funcall;"rem-calc;@:@splat0;i:@keywords{ :
+@args[o:Sass::Script::Number:@numerator_units[ ;i2:@original"45;@;i:@denominator_units[ ;"tabbar-height;@;	[ ;i;"!defaulto;;o;	;"tabbar-height;@;"tabbar_height;i;"tabbar-icon-width;@;	[ ;i;"!defaulto;;o;	;"tabbar-height;@;"tabbar_height;i;"tabbar-line-height;@;	[ ;i;"!defaulto;;o;	;"
+white;@;"
+white;i;"tabbar-color;@;	[ ;i;"!defaulto;;o:Sass::Script::List	;[o;;[ ;i ;"0;@;i;@-o;;"rem-calc;@;0;i;{ ;[o;;[ ;i;"10;@;i;@-;@:@separator:
+space;i;"tabbar-middle-padding;@;	[ ;i;"!defaulto;
+
+;;;["$/* Off Canvas Divider Styles */;@;	[ ;io;;o; 	;[o:Sass::Script::String	;:identifier;"
+solid;@;io;;["px;i;"1px;@;i;[ o;;"scale-color;@;0;i;{"lightnesso;;["%;i…;"	-50%;@;i;[ ;[o;	;"tabbar-bg;@;"tabbar_bg;i;@;!;";i;"tabbar-left-section-border;@;	[ ;i;"!defaulto;;o;	;"tabbar-left-section-border;@;"tabbar_left_section_border;i;" tabbar-right-section-border;@;	[ ;i;0o;
+
+;;;["%/* Off Canvas Tab Bar Headers */;@;	[ ;io;;o;	;"
+white;@;"
+white;i;"tabbar-header-color;@;	[ ;i;"!defaulto;;o;	;"font-weight-bold;@;"font_weight_bold;i;"tabbar-header-weight;@;	[ ;i;"!defaulto;;o;	;"tabbar-height;@;"tabbar_height;i;"tabbar-header-line-height;@;	[ ;i;"!defaulto;;o;;[ ;i ;"0;@;i ;@-;"tabbar-header-margin;@;	[ ;i ;"!defaulto;
+
+;;;["$/* Off Canvas Menu Variables */;@;	[ ;i"o;;o;;"rem-calc;@;0;i#;{ ;[o;;[ ;i˙;"250;@;i#;@-;"off-canvas-width;@;	[ ;i#;"!defaulto;;o;	;"oil;@;"oil;i$;"off-canvas-bg;@;	[ ;i$;"!defaulto;;o;;"scale-color;@;0;i%;{"lightnesso;;["%;i›;"	-30%;@;i%;[ ;[o;	;"tabbar-bg;@;"tabbar_bg;i%;"off-canvas-bg-hover;@;	[ ;i%;"!defaulto;
+
+;;;[")/* Off Canvas Menu List Variables */;@;	[ ;i'o;;o; 	;[o;;["rem;f0.29999999999999999 33;"0.3rem;@;i(;[ o;;"rem-calc;@;0;i(;{ ;[o;;[ ;i;"15;@;i(;@-;@;!;";i(;"off-canvas-label-padding;@;	[ ;i(;"!defaulto;;o;	;"aluminum;@;"aluminum;i);"off-canvas-label-color;@;	[ ;i);"!defaulto;;o;#	;;$;"uppercase;@;i*;"$off-canvas-label-text-transform;@;	[ ;i*;"!defaulto;;o;;"rem-calc;@;0;i+;{ ;[o;;[ ;i;"12;@;i+;@-;"off-canvas-label-font-size;@;	[ ;i+;"!defaulto;;o;	;"font-weight-bold;@;"font_weight_bold;i,;"!off-canvas-label-font-weight;@;	[ ;i,;"!defaulto;;o;	;"tuatara;@;"tuatara;i-;"off-canvas-label-bg;@;	[ ;i-;"!defaulto;;o; 	;[o;;["px;i;"1px;@;i.;[ o;#	;;$;"
+solid;@;i.o;;"scale-color;@;0;i.;{"lightnesso;;["%;i;"14%;@;i.;[ ;[o;	;"off-canvas-label-bg;@;"off_canvas_label_bg;i.;@;!;";i.;" off-canvas-label-border-top;@;	[ ;i.;"!defaulto;;o;#	;;$;"	none;@;i/;"#off-canvas-label-border-bottom;@;	[ ;i/;"!defaulto;;o;;[ ;i ;"0;@;i0;@-;"off-canvas-label-margin;@;	[ ;i0;"!defaulto;;o;;"rem-calc;@;0;i1;{ ;[o;;[ ;i;"10;@;i1;@-o;;[ ;i;"15;@;i1;@-;"off-canvas-link-padding;@;	[ ;i1;"!defaulto;;o;;"	rgba;@;0;i2;{ ;[o;	;"
+white;@;"
+white;i2o;;[ ;f0.69999999999999996 ff;"0.7;@;i2;@-;"off-canvas-link-color;@;	[ ;i2;"!defaulto;;o; 	;[o;;["px;i;"1px;@;i3;[ o;#	;;$;"
+solid;@;i3o;;"scale-color;@;0;i3;{"lightnesso;;["%;i‚;"	-25%;@;i3;[ ;[o;	;"off-canvas-bg;@;"off_canvas_bg;i3;@;!;";i3;""off-canvas-link-border-bottom;@;	[ ;i3;"!defaulto;;o:Sass::Script::Color	:@attrs{	:rediI:
+alphai:
+greeniI:	blueiI;0;@;i4;"off-canvas-back-bg;@;	[ ;i4;"!defaulto;;o;	;" off-canvas-label-border-top;@;" off_canvas_label_border_top;i5;"off-canvas-back-border-top;@;	[ ;i5;"!defaulto;;o;	;"#off-canvas-label-border-bottom;@;"#off_canvas_label_border_bottom;i6;""off-canvas-back-border-bottom;@;	[ ;i6;"!defaulto;;o;;"scale-color;@;0;i7;{"lightnesso;;["%;i›;"	-30%;@;i7;[ ;[o;	;"off-canvas-back-bg;@;"off_canvas_back_bg;i7;"off-canvas-back-hover-bg;@;	[ ;i7;"!defaulto;;o; 	;[o;;["px;i;"1px;@;i8;[ o;#	;;$;"
+solid;@;i8o;;"scale-color;@;0;i8;{"lightnesso;;["%;i;"14%;@;i8;[ ;[o;	;"off-canvas-label-bg;@;"off_canvas_label_bg;i8;@;!;";i8;"%off-canvas-back-hover-border-top;@;	[ ;i8;"!defaulto;;o;#	;;$;"	none;@;i9;"(off-canvas-back-hover-border-bottom;@;	[ ;i9;"!defaulto;
+
+;;;[")/* Off Canvas Menu Icon Variables */;@;	[ ;i;o;;o;	;"
+white;@;"
+white;i<;"tabbar-menu-icon-color;@;	[ ;i<;"!defaulto;;o;;"scale-color;@;0;i=;{"lightnesso;;["%;i›;"	-30%;@;i=;[ ;[o;	;"tabbar-menu-icon-color;@;"tabbar_menu_icon_color;i=;"tabbar-menu-icon-hover;@;	[ ;i=;"!defaulto;;o;;"rem-calc;@;0;i?;{ ;[o;;[ ;i(;"35;@;i?;@-;"!tabbar-menu-icon-text-indent;@;	[ ;i?;"!defaulto;;o;	;"tabbar-icon-width;@;"tabbar_icon_width;i@;"tabbar-menu-icon-width;@;	[ ;i@;"!defaulto;;o;	;"tabbar-height;@;"tabbar_height;iA;"tabbar-menu-icon-height;@;	[ ;iA;"!defaulto;;o;;[ ;i ;"0;@;iB;@-;"tabbar-menu-icon-padding;@;	[ ;iB;"!defaulto;;o;;"rem-calc;@;0;iD;{ ;[o;;[ ;i;"16;@;iD;@-;" tabbar-hamburger-icon-width;@;	[ ;iD;"!defaulto;;o:Sass::Script::Bool;F;@;iE;"tabbar-hamburger-icon-left;@;	[ ;iE;"!defaulto;;o;+;F;@;iF;"tabbar-hamburger-icon-top;@;	[ ;iF;"!defaulto;;o;;["px;i;"1px;@;iG;[ ;"$tabbar-hamburger-icon-thickness;@;	[ ;iG;"!defaulto;;o;;["px;i;"6px;@;iH;[ ;"tabbar-hamburger-icon-gap;@;	[ ;iH;"!defaulto;
+
+;;;["'/* Off Canvas Back-Link Overlay */;@;	[ ;iJo;;o; 	;[o;#	;;$;"background;@;iKo;;["ms;i,;"
+300ms;@;iK;[ o;#	;;$;"	ease;@;iK;@;!;";iK;""off-canvas-overlay-transition;@;	[ ;iK;"!defaulto;;o;#	;;$;"pointer;@;iL;"off-canvas-overlay-cursor;@;	[ ;iL;"!defaulto;;o; 	;[o; 	;[	o;;["px;i˜;"	-4px;@;iM;[ o;;[ ;i ;"0;@;iM;@-o;;["px;i	;"4px;@;iM;[ o;;"	rgba;@;0;iM;{ ;[o;	;"
+black;@;"
+black;iMo;;[ ;f0.5;"0.5;@;iM;@-;@;!;";iMo; 	;[	o;;["px;i	;"4px;@;iM;[ o;;[ ;i ;"0;@;iM;@-o;;["px;i	;"4px;@;iM;[ o;;"	rgba;@;0;iM;{ ;[o;	;"
+black;@;"
+black;iMo;;[ ;f0.5;"0.5;@;iM;@-;@;!;";iM;@;!:
+comma;iM;""off-canvas-overlay-box-shadow;@;	[ ;iM;"!defaulto;;o;;"	rgba;@;0;iN;{ ;[o;	;"
+white;@;"
+white;iNo;;[ ;f0.20000000000000001 ôö;"0.2;@;iN;@-;""off-canvas-overlay-background;@;	[ ;iN;"!defaulto;;o;;"	rgba;@;0;iO;{ ;[o;	;"
+white;@;"
+white;iOo;;[ ;f0.050000000000000003 ôö;"	0.05;@;iO;@-;"(off-canvas-overlay-background-hover;@;	[ ;iO;"!defaulto;
+
+;;;["/* Transition Variables */;@;	[ ;iQo;;o;#	;:string;"transform 500ms ease;@;iR;"menu-slide;@;	[ ;iR;"!defaulto;
+
+;;;["8/* MIXINS
+ * Remove transition flicker on phones */;@;	[ ;iUo:Sass::Tree::MixinDefNode;"kill-flicker;T;@;	[o;
+
+;;;["-/* -webkit-transform: translateZ(0x); */;@;	[ ;iXo:Sass::Tree::PropNode;[" -webkit-backface-visibility;o;#;;$;"hidden;@:@prop_syntax:new;@:
+@tabsi ;	[ ;iY;0;iW;[ o;
+
+;;;["1/* Basic properties for the content wraps */;@;	[ ;i\o;.;"wrap-base;T;@;	[o;/;["position;o;#;;$;"relative;@;0;1;@;2i ;	[ ;i^o;/;["
+width;o;#;;$;"	100%;@;0;1;@;2i ;	[ ;i_;0;i];[ o;.;"translate3d;T;@;	[o;/;["-ms-transform;o;;"translate;@;0;ic;{ ;[o;	;"tx;@;"tx;ico;	;"ty;@;"ty;ic;0;1;@;2i ;	[ ;ico;/;["-webkit-transform;o;;"translate3d;@;0;id;{ ;[o;	;"tx;@;"tx;ido;	;"ty;@;"ty;ido;	;"tz;@;"tz;id;0;1;@;2i ;	[ ;ido;/;["-moz-transform;o;;"translate3d;@;0;ie;{ ;[o;	;"tx;@;"tx;ieo;	;"ty;@;"ty;ieo;	;"tz;@;"tz;ie;0;1;@;2i ;	[ ;ieo;/;["-ms-transform;o;;"translate3d;@;0;if;{ ;[o;	;"tx;@;"tx;ifo;	;"ty;@;"ty;ifo;	;"tz;@;"tz;if;0;1;@;2i ;	[ ;ifo;/;["-o-transform;o;;"translate3d;@;0;ig;{ ;[o;	;"tx;@;"tx;igo;	;"ty;@;"ty;igo;	;"tz;@;"tz;ig;0;1;@;2i ;	[ ;igo;/;["transform;o;;"translate3d;@;0;ih;{ ;[o;	;"tx;@;"tx;iho;	;"ty;@;"ty;iho;	;"tz;@;"tz;ih;0;1;@;2i ;	[ ;ii;0;ib;[[o;;"tx;@;"tx0[o;;"ty;@;"ty0[o;;"tz;@;"tz0o;
+
+;;;["5/* basic styles for off-canvas menu container */;@;	[ ;iko;.;"off-canvas-menu;T;@;	[o:Sass::Tree::MixinNode;"kill-flicker;@;	[ ;0;im;{ ;[ o:Sass::Tree::RuleNode;T;@;2i ;	[o;3;"kill-flicker;@;	[ ;0;in;{ ;[ ;in:
+@rule["*:@parsed_ruleso:"Sass::Selector::CommaSequence:@filename" ;in:@members[o:Sass::Selector::Sequence;9[o:#Sass::Selector::SimpleSequence
+;8@):@sourceso:Set:
+@hash{ ;in:@subject0;9[o:Sass::Selector::Universal;8@);in:@namespace0o;/;["
+width;o;	;"off-canvas-width;@;"off_canvas_width;io;0;1;@;2i ;	[ ;ioo;/;["top;o;#;;$;"0;@;0;1;@;2i ;	[ ;ipo;/;["bottom;o;#;;$;"0;@;0;1;@;2i ;	[ ;iqo;/;["position;o;#;;$;"absolute;@;0;1;@;2i ;	[ ;iro;/;["overflow-x;o;#;;$;"hidden;@;0;1;@;2i ;	[ ;iso;/;["overflow-y;o;#;;$;"	auto;@;0;1;@;2i ;	[ ;ito;/;["background;o;	;"off-canvas-bg;@;"off_canvas_bg;iu;0;1;@;2i ;	[ ;iuo;/;["z-index;o;#;;$;"	1001;@;0;1;@;2i ;	[ ;ivo;/;["box-sizing;o;#;;$;"content-box;@;0;1;@;2i ;	[ ;iwo;/;["transition;o;#;;$;"transform 500ms ease 0s;@;0;1;@;2i ;	[ ;ixo;/;["-webkit-overflow-scrolling;o;#;;$;"
+touch;@;0;1;@;2i ;	[ ;iyo;/;["-ms-overflow-style;o;#;;$;"-ms-autohiding-scrollbar;@;0;1;@;2i ;	[ ;izu:Sass::Tree::IfNodeK[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::String	:
+@type:identifier:@value"	left;@:
+@linei|;i|:@operand1o:Sass::Script::Variable	:
+@name"position;@:@underscored_name"position;i|:@operator:eq0[o:Sass::Tree::MixinNode;"translate3d;@:@children[ :@splat0;i}:@keywords{ :
+@args[o:Sass::Script::Number:@numerator_units["%;f-100.5:@original"-100.5%;@;i}:@denominator_units[ o;;[ ;i ;"0;@;i};[ o;;[ ;i ;"0;@;i};@o:Sass::Tree::PropNode;["	left;o;;	;
+;"0;@:@prop_syntax:new;@:
+@tabsi ;[ ;i~u;BS[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::String	:
+@type:identifier:@value"
+right;@:
+@linei{;i{:@operand1o:Sass::Script::Variable	:
+@name"position;@:@underscored_name"position;i{:@operator:eq0[o:Sass::Tree::MixinNode;"translate3d;@:@children[ :@splat0;i|:@keywords{ :
+@args[o:Sass::Script::Number:@numerator_units["%;f
+100.5:@original"100.5%;@;i|:@denominator_units[ o;;[ ;i ;"0;@;i|;[ o;;[ ;i ;"0;@;i|;@o:Sass::Tree::PropNode;["
+right;o;;	;
+;"0;@:@prop_syntax:new;@:
+@tabsi ;[ ;i};0;il;[[o;;"position;@;"position0o;
+
+;;;["J/* OFF CANVAS WRAP
+ * Wrap visible content and prevent scroll bars */;@;	[ ;iÅo;.;"off-canvas-wrap;T;@;	[	o;3;"kill-flicker;@;	[ ;0;iÑ;{ ;[ o;3;"wrap-base;@;	[ ;0;iÖ;{ ;[ o;/;["overflow;o;#;;$;"hidden;@;0;1;@;2i ;	[ ;iÜo;4;T;@;2i ;	[o;/;["min-height;o;#;;$;"	100%;@;0;1;@;2i ;	[ ;iào;/;["-webkit-overflow-scrolling;o;#;;$;"
+touch;@;0;1;@;2i ;	[ ;ià;ià;5[" &.move-right,
+  &.move-left;6o;7;8" ;ià;9[o;:;9[o;;
+;8@´;<o;=;>{ ;ià;?0;9[o:Sass::Selector::Parent;8@´;iào:Sass::Selector::Class;["move-right;8@´;iào;:;9["
+o;;
+;8@´;<o;=;>{ ;ià;?0;9[o;C;8@´;iào;D;["move-left;8@´;ià;0;iÉ;[ o;
+
+;;;["R/* INNER WRAP
+ * Main content area that moves to reveal the off-canvas nav */;@;	[ ;ião;.;"inner-wrap;T;@;	[o;3;"kill-flicker;@;	[ ;0;ié;{ ;[ o;3;"wrap-base;@;	[ ;0;iè;{ ;[ o;3;"clearfix;@;	[ ;0;iê;{ ;[ o;/;["-webkit-transition;o: Sass::Script::Interpolation:@after0;@:@originally_textF:	@mido;	;"menu-slide;@;"menu_slide;ië;ië:@whitespace_after0:@beforeo;#	;;$;"-webkit-;@;ië:@whitespace_before0;0;1;@;2i ;	[ ;iëo;/;["-moz-transition;o;E;F0;@;GF;Ho;	;"menu-slide;@;"menu_slide;ií;ií;I0;Jo;#	;;$;"
+-moz-;@;ií;K0;0;1;@;2i ;	[ ;iío;/;["-ms-transition;o;E;F0;@;GF;Ho;	;"menu-slide;@;"menu_slide;iì;iì;I0;Jo;#	;;$;"	-ms-;@;iì;K0;0;1;@;2i ;	[ ;iìo;/;["-o-transition;o;E;F0;@;GF;Ho;	;"menu-slide;@;"menu_slide;iî;iî;I0;Jo;#	;;$;"-o-;@;iî;K0;0;1;@;2i ;	[ ;iîo;/;["transition;o;E;F0;@;GF;Ho;	;"menu-slide;@;"menu_slide;iï;iï;I0;J0;Ki~;0;1;@;2i ;	[ ;iï;0;iç;[ o;
+
+;;;["./* TAB BAR
+ * This is the tab bar base */;@;	[ ;iòo;.;"tab-bar-base;T;@;	[o;3;"kill-flicker;@;	[ ;0;iõ;{ ;[ o;
+
+;;;["/* base styles */;@;	[ ;iùo;/;["background;o;	;"tabbar-bg;@;"tabbar_bg;iû;0;1;@;2i ;	[ ;iûo;/;["
+color;o;	;"tabbar-color;@;"tabbar_color;iü;0;1;@;2i ;	[ ;iüo;/;["height;o;	;"tabbar-height;@;"tabbar_height;i†;0;1;@;2i ;	[ ;i†o;/;["line-height;o;	;"tabbar-line-height;@;"tabbar_line_height;i°;0;1;@;2i ;	[ ;i°o;
+
+;;;["9/* make sure it's below the .exit-off-canvas link */;@;	[ ;i£o;/;["position;o;#;;$;"relative;@;0;1;@;2i ;	[ ;i§o;
+
+;;;["/* z-index: 999; */;@;	[ ;i•o;
+
+;;;["/* Typography */;@;	[ ;ißo;4;T;@;2i ;	[	o;/;["
+color;o;	;"tabbar-header-color;@;"tabbar_header_color;i©;0;1;@;2i ;	[ ;i©o;/;["font-weight;o;	;"tabbar-header-weight;@;"tabbar_header_weight;i™;0;1;@;2i ;	[ ;i™o;/;["line-height;o;	;"tabbar-header-line-height;@;"tabbar_header_line_height;i´;0;1;@;2i ;	[ ;i´o;/;["margin;o;	;"tabbar-header-margin;@;"tabbar_header_margin;i¨;0;1;@;2i ;	[ ;i¨;i®;5["h1,h2,h3,h4,h5,h6;6o;7;8" ;i®;9[o;:;9[o;;
+;8@i;<o;=;>{ ;i®;?0;9[o:Sass::Selector::Element	;["h1;8@i;i®;A0o;:;9[o;;
+;8@i;<o;=;>{ ;i®;?0;9[o;L	;["h2;8@i;i®;A0o;:;9[o;;
+;8@i;<o;=;>{ ;i®;?0;9[o;L	;["h3;8@i;i®;A0o;:;9[o;;
+;8@i;<o;=;>{ ;i®;?0;9[o;L	;["h4;8@i;i®;A0o;:;9[o;;
+;8@i;<o;=;>{ ;i®;?0;9[o;L	;["h5;8@i;i®;A0o;:;9[o;;
+;8@i;<o;=;>{ ;i®;?0;9[o;L	;["h6;8@i;i®;A0o;4;T;@;2i ;	[o;/;["font-size;o;	;"h5-font-size;@;"h5_font_size;iÆ;0;1;@;2i ;	[ ;iÆ;iÆ;5["h1,h2,h3,h4;6o;7;8" ;iÆ;9[	o;:;9[o;;
+;8@≠;<o;=;>{ ;iÆ;?0;9[o;L	;["h1;8@≠;iÆ;A0o;:;9[o;;
+;8@≠;<o;=;>{ ;iÆ;?0;9[o;L	;["h2;8@≠;iÆ;A0o;:;9[o;;
+;8@≠;<o;=;>{ ;iÆ;?0;9[o;L	;["h3;8@≠;iÆ;A0o;:;9[o;;
+;8@≠;<o;=;>{ ;iÆ;?0;9[o;L	;["h4;8@≠;iÆ;A0;0;iö;[ o;
+
+;;;["w/* SMALL SECTIONS
+ * These are small sections on the left and right that contain the off-canvas toggle buttons; */;@;	[ ;i±o;.;"tabbar-small-section;T;@;	[o;/;["
+width;o;	;"tabbar-icon-width;@;"tabbar_icon_width;i¥;0;1;@;2i ;	[ ;i¥o;/;["height;o;	;"tabbar-height;@;"tabbar_height;iµ;0;1;@;2i ;	[ ;iµo;/;["position;o;#;;$;"absolute;@;0;1;@;2i ;	[ ;i∂o;/;["top;o;#;;$;"0;@;0;1;@;2i ;	[ ;i∑u;BH[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::String	:
+@type:identifier:@value"	left;@:
+@linei∏;i∏:@operand1o:Sass::Script::Variable	:
+@name"position;@:@underscored_name"position;i∏:@operator:eq0[o:Sass::Tree::PropNode;["border-right;o;	;"tabbar-left-section-border;@;"tabbar_left_section_border;iπ:@prop_syntax:new;@:
+@tabsi :@children[ ;iπo:Sass::Tree::CommentNode
+;	:silent;["H/* box-shadow: 1px 0 0 scale-color($tabbar-bg, $lightness: 13%); */;@;[ ;i∫o;;["	left;o;;	;
+;"0;@;;;@;i ;[ ;iªu;BM[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::String	:
+@type:identifier:@value"
+right;@:
+@lineiΩ;iΩ:@operand1o:Sass::Script::Variable	:
+@name"position;@:@underscored_name"position;iΩ:@operator:eq0[o:Sass::Tree::PropNode;["border-left;o;	;" tabbar-right-section-border;@;" tabbar_right_section_border;iæ:@prop_syntax:new;@:
+@tabsi :@children[ ;iæo:Sass::Tree::CommentNode
+;	:silent;["J/* box-shadow: -1px 0 0 scale-color($tabbar-bg, $lightness: -50%); */;@;[ ;iøo;;["
+right;o;;	;
+;"0;@;;;@;i ;[ ;i¿;0;i≥;[[o;;"position;@;"position0o;.;"tab-bar-section;T;@;	[o;/;["padding;o;	;"tabbar-middle-padding;@;"tabbar_middle_padding;i≈;0;1;@;2i ;	[ ;i≈o;/;["position;o;#;;$;"absolute;@;0;1;@;2i ;	[ ;i∆o;/;["text-align;o;#;;$;"center;@;0;1;@;2i ;	[ ;i«o;/;["height;o;	;"tabbar-height;@;"tabbar_height;i»;0;1;@;2i ;	[ ;i»o;/;["top;o;#;;$;"0;@;0;1;@;2i ;	[ ;i…o:Sass::Tree::MediaNode;T;" ;@;2i ;	[o;4;T;@;2i ;	[o;/;["text-align;o;#;;$;"	left;@;0;1;@;2i ;	[ ;iÀ;iÀ;5["&.left, &.right;6o;7;8" ;iÀ;9[o;:;9[o;;
+;8@-;<o;=;>{ ;iÀ;?0;9[o;C;8@-;iÀo;D;["	left;8@-;iÀo;:;9[o;;
+;8@-;<o;=;>{ ;iÀ;?0;9[o;C;8@-;iÀo;D;["
+right;8@-;iÀ:@query[o;	;"medium-up;@;"medium_up;i ;i o;
+
+;;;["6/* still need to make these non-presentational */;@;	[ ;iŒo;4;T;@;2i ;	[o;/;["	left;o;#;;$;"0;@;0;1;@;2i ;	[ ;i–o;/;["
+right;o;	;"tabbar-icon-width;@;"tabbar_icon_width;i—;0;1;@;2i ;	[ ;i—;iœ;5["&.left;6o;7;8" ;iœ;9[o;:;9[o;;
+;8@];<o;=;>{ ;iœ;?0;9[o;C;8@];iœo;D;["	left;8@];iœo;4;T;@;2i ;	[o;/;["	left;o;	;"tabbar-icon-width;@;"tabbar_icon_width;i‘;0;1;@;2i ;	[ ;i‘o;/;["
+right;o;#;;$;"0;@;0;1;@;2i ;	[ ;i’;i”;5["&.right;6o;7;8" ;i”;9[o;:;9[o;;
+;8@{;<o;=;>{ ;i”;?0;9[o;C;8@{;i”o;D;["
+right;8@{;i”o;4;T;@;2i ;	[o;/;["	left;o;	;"tabbar-icon-width;@;"tabbar_icon_width;iÿ;0;1;@;2i ;	[ ;iÿo;/;["
+right;o;	;"tabbar-icon-width;@;"tabbar_icon_width;iŸ;0;1;@;2i ;	[ ;iŸ;i◊;5["&.middle;6o;7;8" ;i◊;9[o;:;9[o;;
+;8@ö;<o;=;>{ ;i◊;?0;9[o;C;8@ö;i◊o;D;["middle;8@ö;i◊;0;iƒ;[ o;
+
+;;;["N/* OFF CANVAS LIST
+ * This is the list of links in the off-canvas menu */;@;	[ ;i›o;.;"off-canvas-list;T;@;	[	o;/;["list-style-type;o;#;;$;"	none;@;0;1;@;2i ;	[ ;i‡o;/;["padding;o;#;;$;"0;@;0;1;@;2i ;	[ ;i·o;/;["margin;o;#;;$;"0;@;0;1;@;2i ;	[ ;i‚o;4;T;@;2i ;	[o;4;T;@;2i ;	[o;/;["display;o;#;;$;"
+block;@;0;1;@;2i ;	[ ;iÊo;/;["padding;o;	;"off-canvas-label-padding;@;"off_canvas_label_padding;iÁ;0;1;@;2i ;	[ ;iÁo;/;["
+color;o;	;"off-canvas-label-color;@;"off_canvas_label_color;iË;0;1;@;2i ;	[ ;iËo;/;["text-transform;o;	;"$off-canvas-label-text-transform;@;"$off_canvas_label_text_transform;iÈ;0;1;@;2i ;	[ ;iÈo;/;["font-size;o;	;"off-canvas-label-font-size;@;"off_canvas_label_font_size;iÍ;0;1;@;2i ;	[ ;iÍo;/;["font-weight;o;	;"!off-canvas-label-font-weight;@;"!off_canvas_label_font_weight;iÎ;0;1;@;2i ;	[ ;iÎo;/;["background;o;	;"off-canvas-label-bg;@;"off_canvas_label_bg;iÏ;0;1;@;2i ;	[ ;iÏo;/;["border-top;o;	;" off-canvas-label-border-top;@;" off_canvas_label_border_top;iÌ;0;1;@;2i ;	[ ;iÌo;/;["border-bottom;o;	;"#off-canvas-label-border-bottom;@;"#off_canvas_label_border_bottom;iÓ;0;1;@;2i ;	[ ;iÓo;/;["margin;o;	;"off-canvas-label-margin;@;"off_canvas_label_margin;iÔ;0;1;@;2i ;	[ ;iÔ;iÂ;5["
+label;6o;7;8" ;iÂ;9[o;:;9[o;;
+;8@;<o;=;>{ ;iÂ;?0;9[o;L	;["
+label;8@;iÂ;A0o;4;T;@;2i ;	[o;/;["display;o;#;;$;"
+block;@;0;1;@;2i ;	[ ;iÚo;/;["padding;o;	;"off-canvas-link-padding;@;"off_canvas_link_padding;iÛ;0;1;@;2i ;	[ ;iÛo;/;["
+color;o;	;"off-canvas-link-color;@;"off_canvas_link_color;iÙ;0;1;@;2i ;	[ ;iÙo;/;["border-bottom;o;	;""off-canvas-link-border-bottom;@;""off_canvas_link_border_bottom;iı;0;1;@;2i ;	[ ;iıo;/;["transition;o;#;;$;"background 300ms ease;@;0;1;@;2i ;	[ ;iˆo;4;T;@;2i ;	[o;/;["background;o;	;"off-canvas-bg-hover;@;"off_canvas_bg_hover;i¯;0;1;@;2i ;	[ ;i¯;i˜;5["&:hover;6o;7;8" ;i˜;9[o;:;9[o;;
+;8@F;<o;=;>{ ;i˜;?0;9[o;C;8@F;i˜o:Sass::Selector::Pseudo
+;["
+hover:	@arg0;8@F;i˜:@syntactic_type:
+class;iÒ;5["a;6o;7;8" ;iÒ;9[o;:;9[o;;
+;8@U;<o;=;>{ ;iÒ;?0;9[o;L	;["a;8@U;iÒ;A0;i‰;5["li;6o;7;8" ;i‰;9[o;:;9[o;;
+;8@c;<o;=;>{ ;i‰;?0;9[o;L	;["li;8@c;i‰;A0;0;iﬂ;[ o;
+
+;;;["b/* BACK LINK
+ * This is an overlay that, when clicked, will toggle off the off canvas menu */;@;	[ ;iˇo;.;"back-link;T;@;	[o;3;"kill-flicker;@;	[ ;0;i;{ ;[ o;/;["transition;o;	;""off-canvas-overlay-transition;@;""off_canvas_overlay_transition;i;0;1;@;2i ;	[ ;io;/;["cursor;o;	;"off-canvas-overlay-cursor;@;"off_canvas_overlay_cursor;i;0;1;@;2i ;	[ ;io;/;["box-shadow;o;	;""off-canvas-overlay-box-shadow;@;""off_canvas_overlay_box_shadow;i;0;1;@;2i ;	[ ;io;
+
+;;;["/* fill the screen */;@;	[ ;io;/;["display;o;#;;$;"
+block;@;0;1;@;2i ;	[ ;i	o;/;["position;o;#;;$;"absolute;@;0;1;@;2i ;	[ ;i
+o;/;["background;o;	;""off-canvas-overlay-background;@;""off_canvas_overlay_background;i;0;1;@;2i ;	[ ;io;/;["top;o;#;;$;"0;@;0;1;@;2i ;	[ ;io;/;["bottom;o;#;;$;"0;@;0;1;@;2i ;	[ ;io;/;["	left;o;#;;$;"0;@;0;1;@;2i ;	[ ;io;/;["
+right;o;#;;$;"0;@;0;1;@;2i ;	[ ;io;/;["z-index;o;#;;$;"	1002;@;0;1;@;2i ;	[ ;io;/;[" -webkit-tap-highlight-color;o;;"	rgba;@;0;i;{ ;[	o;;[ ;i ;"0;@;i;@-o;;[ ;i ;"0;@;i;@-o;;[ ;i ;"0;@;i;@-o;;[ ;i ;"0;@;i;@-;0;1;@;2i ;	[ ;io;M;T;" ;@;2i ;	[o;4;T;@;2i ;	[o;/;["background;o;	;"(off-canvas-overlay-background-hover;@;"(off_canvas_overlay_background_hover;i;0;1;@;2i ;	[ ;i;i;5["&:hover;6o;7;8" ;i;9[o;:;9[o;;
+;8@Ë;<o;=;>{ ;i;?0;9[o;C;8@Ë;io;O
+;["
+hover;P0;8@Ë;i;Q;R;N[o;	;"medium-up;@;"medium_up;i;i;0;i;[ o;
+
+;;;[" /*
+ * DEFAULT CLASSES
+ * */;@;	[ ;io;3;"exports;T;@;	[u;BÍ)[o:Sass::Script::Variable	:
+@name"$include-html-off-canvas-classes:@options{ :@underscored_name"$include_html_off_canvas_classes:
+@linei0[o:Sass::Tree::RuleNode:@has_childrenT;@:
+@tabsi :@children[o:Sass::Tree::MixinNode;"off-canvas-wrap;@;[ :@splat0;	i :@keywords{ :
+@args[ ;	i :
+@rule[".off-canvas-wrap:@parsed_ruleso:"Sass::Selector::CommaSequence:@filename" ;	i :@members[o:Sass::Selector::Sequence;[o:#Sass::Selector::SimpleSequence
+;@:@sourceso:Set:
+@hash{ ;	i :@subject0;[o:Sass::Selector::Class;["off-canvas-wrap;@;	i o;
+;T;@;i ;[o;;"inner-wrap;@;[ ;0;	i!;{ ;[ ;	i!;[".inner-wrap;o;;" ;	i!;[o;;[o;
+;@*;o;;{ ;	i!;0;[o;;["inner-wrap;@*;	i!o;
+;T;@;i ;[o;;"tab-bar-base;@;[ ;0;	i#;{ ;[ ;	i#;[".tab-bar;o;;" ;	i#;[o;;[o;
+;@?;o;;{ ;	i#;0;[o;;["tab-bar;@?;	i#o;
+;T;@;i ;[o;;"tabbar-small-section;@;[ ;0;	i%;{"positiono:Sass::Script::String	:
+@type:identifier:@value"	left;@;	i%;[ ;	i%;[".left-small;o;;" ;	i%;[o;;[o;
+;@W;o;;{ ;	i%;0;[o;;["left-small;@W;	i%o;
+;T;@;i ;[o;;"tabbar-small-section;@;[ ;0;	i&;{"positiono;	;; ;!"
+right;@;	i&;[ ;	i&;[".right-small;o;;" ;	i&;[o;;[o;
+;@o;o;;{ ;	i&;0;[o;;["right-small;@o;	i&o;
+;T;@;i ;[o;;"tab-bar-section;@;[ ;0;	i(;{ ;[ ;	i(;[".tab-bar-section;o;;" ;	i(;[o;;[o;
+;@;o;;{ ;	i(;0;[o;;["tab-bar-section;@;	i(o:Sass::Tree::CommentNode
+;:silent;!["/* MENU BUTTON
+ * This is a little bonus. You don't need it for off canvas to work. Mixins to be written in the future. */;@;[ ;	i*o;
+;T;@;i ;[o:Sass::Tree::PropNode;["text-indent;!o; 	;"!tabbar-menu-icon-text-indent;@;"!tabbar_menu_icon_text_indent;	i-:@prop_syntax:new;@;i ;[ ;	i-o;$;["
+width;!o; 	;"tabbar-menu-icon-width;@;"tabbar_menu_icon_width;	i.;%;&;@;i ;[ ;	i.o;$;["height;!o; 	;"tabbar-menu-icon-height;@;"tabbar_menu_icon_height;	i/;%;&;@;i ;[ ;	i/o;$;["display;!o;;; ;!"
+block;@;%;&;@;i ;[ ;	i0o;$;["padding;!o; 	;"tabbar-menu-icon-padding;@;"tabbar_menu_icon_padding;	i1;%;&;@;i ;[ ;	i1o;$;["
+color;!o; 	;"tabbar-menu-icon-color;@;"tabbar_menu_icon_color;	i2;%;&;@;i ;[ ;	i2o;$;["position;!o;;; ;!"relative;@;%;&;@;i ;[ ;	i3o;$;["transform;!o:Sass::Script::Funcall;"translate3d;@;0;	i4;{ ;[o:Sass::Script::Number:@numerator_units[ ;!i :@original"0;@;	i4:@denominator_units[ o;(;)[ ;!i ;*"0;@;	i4;+@…o;(;)[ ;!i ;*"0;@;	i4;+@…;%;&;@;i ;[ ;	i4o;"
+;;#;!["D/* @include for the hamburger menu-icon
+ *
+ * Arguments as follows: ($width, $left, $top, $thickness, $gap, $color, $hover-color)
+ * $width - Width of hamburger icon in rem Default: $tabbar-hamburger-icon-width.
+ * $left - If false, icon will be centered horizontally || explicitly set value in rem Default: $tabbar-hamburger-icon-left= False
+ * $top - If false, icon will be centered vertically || explicitly set value in rem Default: = False
+ * $thickness - thickness of lines in hamburger icon, set value in px Default: $tabbar-hamburger-icon-thickness = 1px
+ * $gap - spacing between the lines in hamburger icon, set value in px Default: $tabbar-hamburger-icon-gap = 6px
+ * $color - icon color Default: $tabbar-menu-icon-color
+ * $hover-color - icon color when hovered Default: $tabbar-menu-icon-hover
+ * $offcanvas - Set to true */;@;[ ;	i6o;;"hamburger;@;[ ;0;	iB;{ ;[o; 	;" tabbar-hamburger-icon-width;@;" tabbar_hamburger_icon_width;	iAo; 	;"tabbar-hamburger-icon-left;@;"tabbar_hamburger_icon_left;	iAo; 	;"tabbar-hamburger-icon-top;@;"tabbar_hamburger_icon_top;	iAo; 	;"$tabbar-hamburger-icon-thickness;@;"$tabbar_hamburger_icon_thickness;	iAo; 	;"tabbar-hamburger-icon-gap;@;"tabbar_hamburger_icon_gap;	iAo; 	;"tabbar-menu-icon-color;@;"tabbar_menu_icon_color;	iAo; 	;"tabbar-menu-icon-hover;@;"tabbar_menu_icon_hover;	iAo:Sass::Script::Bool;!T;@;	iA;	i,;[".tab-bar .menu-icon;o;;" ;	i,;[o;;[o;
+;@Û;o;;{ ;	i,;0;[o;;["tab-bar;@Û;	i,o;
+;@Û;o;;{ ;	i,;0;[o;;["menu-icon;@Û;	i,o;
+;T;@;i ;[o;;"off-canvas-menu;@;[ ;0;	iD;{"positiono;	;; ;!"	left;@;	iD;[ ;	iD;[".left-off-canvas-menu;o;;" ;	iD;[o;;[o;
+;@;o;;{ ;	iD;0;[o;;["left-off-canvas-menu;@;	iDo;
+;T;@;i ;[o;;"off-canvas-menu;@;[ ;0;	iE;{"positiono;	;; ;!"
+right;@;	iE;[ ;	iE;[".right-off-canvas-menu;o;;" ;	iE;[o;;[o;
+;@*;o;;{ ;	iE;0;[o;;["right-off-canvas-menu;@*;	iEo;
+;T;@;i ;[o;;"off-canvas-list;@;[ ;0;	iG;{ ;[ ;	iG;["ul.off-canvas-list;o;;" ;	iG;[o;;[o;
+;@?;o;;{ ;	iG;0;[o:Sass::Selector::Element	;["ul;@?;	iG:@namespace0o;;["off-canvas-list;@?;	iGo;"
+;;#;!["a/* ANIMATION CLASSES
+ * These classes are added with JS and trigger the actual animation. */;@;[ ;	iJo;
+;T;@;i ;[o;
+;T;@;i ;[o;;"translate3d;@;[ ;0;	iN;{ ;[o; 	;"off-canvas-width;@;"off_canvas_width;	iNo;(;)[ ;!i ;*"0;@;	iN;+@…o;(;)[ ;!i ;*"0;@;	iN;+@…;	iM;["> .inner-wrap;o;;" ;	iM;[o;;[">o;
+;@f;o;;{ ;	iM;0;[o;;["inner-wrap;@f;	iMo;
+;T;@;i ;[o;;"back-link;@;[ ;0;	iP;{ ;[ ;	iP;[".exit-off-canvas;o;;" ;	iP;[o;;[o;
+;@|;o;;{ ;	iP;0;[o;;["exit-off-canvas;@|;	iP;	iL;[".move-right;o;;" ;	iL;[o;;[o;
+;@ä;o;;{ ;	iL;0;[o;;["move-right;@ä;	iLo;
+;T;@;i ;[o;
+;T;@;i ;[o;;"translate3d;@;[ ;0;	iU;{ ;[o:!Sass::Script::UnaryOperation	;@;	iU:@operando; 	;"off-canvas-width;@;"off_canvas_width;	iU:@operator:
+minuso;(;)[ ;!i ;*"0;@;	iU;+@…o;(;)[ ;!i ;*"0;@;	iU;+@…;	iT;["> .inner-wrap;o;;" ;	iT;[o;;[">o;
+;@´;o;;{ ;	iT;0;[o;;["inner-wrap;@´;	iTo;
+;T;@;i ;[o;;"back-link;@;[ ;0;	iX;{ ;[ ;	iX;[".exit-off-canvas;o;;" ;	iX;[o;;[o;
+;@¡;o;;{ ;	iX;0;[o;;["exit-off-canvas;@¡;	iX;	iS;[".move-left;o;;" ;	iS;[o;;[o;
+;@œ;o;;{ ;	iS;0;[o;;["move-left;@œ;	iSo;
+;T;@;i ;[o;
+;T;@;i ;[o;$;["-ms-transform;!o;;; ;!"	none;@;%;&;@;i ;[ ;	i\o;$;["-webkit-transform;!o;;; ;!"	none;@;%;&;@;i ;[ ;	i]o;$;["-moz-transform;!o;;; ;!"	none;@;%;&;@;i ;[ ;	i^o;$;["-o-transform;!o;;; ;!"	none;@;%;&;@;i ;[ ;	i_o;$;["transform;!o;;; ;!"	none;@;%;&;@;i ;[ ;	i`o;$;["z-index;!o;;; ;!"	1003;@;%;&;@;i ;[ ;	ia;	i[;["2.left-off-canvas-menu, .right-off-canvas-menu;o;;" ;	i[;[o;;[o;
+;@;o;;{ ;	i[;0;[o;;["left-off-canvas-menu;@;	i[o;;[o;
+;@;o;;{ ;	i[;0;[o;;["right-off-canvas-menu;@;	i[o;
+;T;@;i ;[o;;"back-link;@;[ ;0;	ic;{ ;[ ;	ic;[".exit-off-canvas;o;;" ;	ic;[o;;[o;
+;@#;o;;{ ;	ic;0;[o;;["exit-off-canvas;@#;	ic;	iZ;[".offcanvas-overlap;o;;" ;	iZ;[o;;[o;
+;@1;o;;{ ;	iZ;0;[o;;["offcanvas-overlap;@1;	iZo;
+;T;@;i ;[o;
+;T;@;i ;[o;$;["-ms-transform;!o;;; ;!"	none;@;%;&;@;i ;[ ;	igo;$;["-webkit-transform;!o;;; ;!"	none;@;%;&;@;i ;[ ;	iho;$;["-moz-transform;!o;;; ;!"	none;@;%;&;@;i ;[ ;	iio;$;["-o-transform;!o;;; ;!"	none;@;%;&;@;i ;[ ;	ijo;$;["transform;!o;;; ;!"	none;@;%;&;@;i ;[ ;	iko;$;["z-index;!o;;; ;!"	1003;@;%;&;@;i ;[ ;	il;	if;[".right-off-canvas-menu;o;;" ;	if;[o;;[o;
+;@g;o;;{ ;	if;0;[o;;["right-off-canvas-menu;@g;	ifo;
+;T;@;i ;[o;;"back-link;@;[ ;0;	in;{ ;[ ;	in;[".exit-off-canvas;o;;" ;	in;[o;;[o;
+;@|;o;;{ ;	in;0;[o;;["exit-off-canvas;@|;	in;	ie;[".offcanvas-overlap-left;o;;" ;	ie;[o;;[o;
+;@ä;o;;{ ;	ie;0;[o;;["offcanvas-overlap-left;@ä;	ieo;
+;T;@;i ;[o;
+;T;@;i ;[o;$;["-ms-transform;!o;;; ;!"	none;@;%;&;@;i ;[ ;	iro;$;["-webkit-transform;!o;;; ;!"	none;@;%;&;@;i ;[ ;	iso;$;["-moz-transform;!o;;; ;!"	none;@;%;&;@;i ;[ ;	ito;$;["-o-transform;!o;;; ;!"	none;@;%;&;@;i ;[ ;	iuo;$;["transform;!o;;; ;!"	none;@;%;&;@;i ;[ ;	ivo;$;["z-index;!o;;; ;!"	1003;@;%;&;@;i ;[ ;	iw;	iq;[".left-off-canvas-menu;o;;" ;	iq;[o;;[o;
+;@¿;o;;{ ;	iq;0;[o;;["left-off-canvas-menu;@¿;	iqo;
+;T;@;i ;[o;;"back-link;@;[ ;0;	iy;{ ;[ ;	iy;[".exit-off-canvas;o;;" ;	iy;[o;;[o;
+;@’;o;;{ ;	iy;0;[o;;["exit-off-canvas;@’;	iy;	ip;[".offcanvas-overlap-right;o;;" ;	ip;[o;;[o;
+;@„;o;;{ ;	ip;0;[o;;["offcanvas-overlap-right;@„;	ipo;"
+;;#;!["/* Older browsers */;@;[ ;	i|o;
+;T;@;i ;[	o;
+;T;@;i ;[o;$;["	left;!o;/	;@;	i~;0o; 	;"off-canvas-width;@;"off_canvas_width;	i~;1;2;%;&;@;i ;[ ;	i~;	i~;[".left-off-canvas-menu;o;;" ;	i~;[o;;[o;
+;@;o;;{ ;	i~;0;[o;;["left-off-canvas-menu;@;	i~o;
+;T;@;i ;[o;$;["
+right;!o;/	;@;	i;0o; 	;"off-canvas-width;@;"off_canvas_width;	i;1;2;%;&;@;i ;[ ;	i;	i;[".right-off-canvas-menu;o;;" ;	i;[o;;[o;
+;@;o;;{ ;	i;0;[o;;["right-off-canvas-menu;@;	io;
+;T;@;i ;[o;$;["
+right;!o; 	;"off-canvas-width;@;"off_canvas_width;	iÅ;%;&;@;i ;[ ;	iÅ;	iÅ;[".move-left > .inner-wrap;o;;" ;	iÅ;[o;;[o;
+;@0;o;;{ ;	iÅ;0;[o;;["move-left;@0;	iÅ">o;
+;@0;o;;{ ;	iÅ;0;[o;;["inner-wrap;@0;	iÅo;
+;T;@;i ;[o;$;["	left;!o; 	;"off-canvas-width;@;"off_canvas_width;	iÇ;%;&;@;i ;[ ;	iÇ;	iÇ;[".move-right > .inner-wrap;o;;" ;	iÇ;[o;;[o;
+;@O;o;;{ ;	iÇ;0;[o;;["move-right;@O;	iÇ">o;
+;@O;o;;{ ;	iÇ;0;[o;;["inner-wrap;@O;	iÇ;	i};[".no-csstransforms;o;;" ;	i};[o;;[o;
+;@e;o;;{ ;	i};0;[o;;["no-csstransforms;@e;	i};0;i;{ ;[o;#	;;-;"offcanvas;@;io;
+
+;;;["+/*
+ * Off-Canvas Submenu Classes
+ * */;@;	[ ;iào;.;"off-canvas-submenu;T;@;	[o;3;"kill-flicker;@;	[ ;0;iå;{ ;[ o;4;T;@;2i ;	[o;3;"kill-flicker;@;	[ ;0;iç;{ ;[ ;iç;5["*;6o;7;8" ;iç;9[o;:;9[o;;
+;8@;<o;=;>{ ;iç;?0;9[o;@;8@;iç;A0o;/;["
+width;o;	;"off-canvas-width;@;"off_canvas_width;ié;0;1;@;2i ;	[ ;iéo;/;["top;o;#;;$;"0;@;0;1;@;2i ;	[ ;ièo;/;["bottom;o;#;;$;"0;@;0;1;@;2i ;	[ ;iêo;/;["position;o;#;;$;"absolute;@;0;1;@;2i ;	[ ;iëo;/;["margin;o;#;;$;"0;@;0;1;@;2i ;	[ ;iío;/;["overflow-x;o;#;;$;"hidden;@;0;1;@;2i ;	[ ;iìo;/;["overflow-y;o;#;;$;"	auto;@;0;1;@;2i ;	[ ;iîo;/;["background;o;	;"off-canvas-bg;@;"off_canvas_bg;iï;0;1;@;2i ;	[ ;iïo;/;["z-index;o;#;;$;"	1002;@;0;1;@;2i ;	[ ;iño;/;["box-sizing;o;#;;$;"content-box;@;0;1;@;2i ;	[ ;ióo;/;["-webkit-overflow-scrolling;o;#;;$;"
+touch;@;0;1;@;2i ;	[ ;iòu;BS[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::String	:
+@type:identifier:@value"	left;@:
+@lineiô;iô:@operand1o:Sass::Script::Variable	:
+@name"position;@:@underscored_name"position;iô:@operator:eq0[o:Sass::Tree::MixinNode;"translate3d;@:@children[ :@splat0;iö:@keywords{ :
+@args[o:Sass::Script::Number:@numerator_units["%;ió:@original"
+-100%;@;iö:@denominator_units[ o;;[ ;i ;"0;@;iö;[ o;;[ ;i ;"0;@;iö;@o:Sass::Tree::PropNode;["	left;o;;	;
+;"0;@:@prop_syntax:new;@:
+@tabsi ;[ ;iõu;BT[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::String	:
+@type:identifier:@value"
+right;@:
+@lineiù;iù:@operand1o:Sass::Script::Variable	:
+@name"position;@:@underscored_name"position;iù:@operator:eq0[o:Sass::Tree::MixinNode;"translate3d;@:@children[ :@splat0;iû:@keywords{ :
+@args[o:Sass::Script::Number:@numerator_units["%;ii:@original"	100%;@;iû:@denominator_units[ o;;[ ;i ;"0;@;iû;[ o;;[ ;i ;"0;@;iû;@o:Sass::Tree::PropNode;["
+right;o;;	;
+;"0;@:@prop_syntax:new;@:
+@tabsi ;[ ;iüo;/;["-webkit-transition;o;E;F0;@;GF;Ho;	;"menu-slide;@;"menu_slide;i°;i°;I0;Jo;#	;;$;"-webkit-;@;i°;K0;0;1;@;2i ;	[ ;i°o;/;["-moz-transition;o;E;F0;@;GF;Ho;	;"menu-slide;@;"menu_slide;i¢;i¢;I0;Jo;#	;;$;"
+-moz-;@;i¢;K0;0;1;@;2i ;	[ ;i¢o;/;["-ms-transition;o;E;F0;@;GF;Ho;	;"menu-slide;@;"menu_slide;i£;i£;I0;Jo;#	;;$;"	-ms-;@;i£;K0;0;1;@;2i ;	[ ;i£o;/;["-o-transition;o;E;F0;@;GF;Ho;	;"menu-slide;@;"menu_slide;i§;i§;I0;Jo;#	;;$;"-o-;@;i§;K0;0;1;@;2i ;	[ ;i§o;/;["transition;o;E;F0;@;GF;Ho;	;"menu-slide;@;"menu_slide;i•;i•;I0;J0;KiR1;0;1;@;2i ;	[ ;i•o;
+
+;;;["&/*back button style like label */;@;	[ ;ißo;4;T;@;2i ;	[o;/;["padding;o;	;"off-canvas-label-padding;@;"off_canvas_label_padding;i©;0;1;@;2i ;	[ ;i©o;/;["
+color;o;	;"off-canvas-label-color;@;"off_canvas_label_color;i™;0;1;@;2i ;	[ ;i™o;/;["text-transform;o;	;"$off-canvas-label-text-transform;@;"$off_canvas_label_text_transform;i´;0;1;@;2i ;	[ ;i´o;/;["font-weight;o;	;"!off-canvas-label-font-weight;@;"!off_canvas_label_font_weight;i¨;0;1;@;2i ;	[ ;i¨o;/;["background;o;	;"off-canvas-back-bg;@;"off_canvas_back_bg;i≠;0;1;@;2i ;	[ ;i≠o;/;["border-top;o;	;"off-canvas-back-border-top;@;"off_canvas_back_border_top;iÆ;0;1;@;2i ;	[ ;iÆo;/;["border-bottom;o;	;""off-canvas-back-border-bottom;@;""off_canvas_back_border_bottom;iØ;0;1;@;2i ;	[ ;iØo;4;T;@;2i ;	[o;/;["background;o;	;"off-canvas-back-hover-bg;@;"off_canvas_back_hover_bg;i±;0;1;@;2i ;	[ ;i±o;/;["border-top;o;	;"%off-canvas-back-hover-border-top;@;"%off_canvas_back_hover_border_top;i≤;0;1;@;2i ;	[ ;i≤o;/;["border-bottom;o;	;"(off-canvas-back-hover-border-bottom;@;"(off_canvas_back_hover_border_bottom;i≥;0;1;@;2i ;	[ ;i≥;i∞;5["&:hover;6o;7;8" ;i∞;9[o;:;9[o;;
+;8@Î;<o;=;>{ ;i∞;?0;9[o;C;8@Î;i∞o;O
+;["
+hover;P0;8@Î;i∞;Q;Ro;/;["margin;o;	;"off-canvas-label-margin;@;"off_canvas_label_margin;iµ;0;1;@;2i ;	[ ;iµu;Bá[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::String	:
+@type:identifier:@value"
+right;@:
+@linei∂;i∂:@operand1o:Sass::Script::Variable	:
+@name"position;@:@underscored_name"position;i∂:@operator:eq0[u:Sass::Tree::IfNode{[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::String	:
+@type:identifier:@value"rtl;@:
+@linei∑;i∑:@operand1o:Sass::Script::Variable	:
+@name"text-direction;@:@underscored_name"text_direction;i∑:@operator:equ:Sass::Tree::IfNodeT[00[o:Sass::Tree::RuleNode:@has_childrenT:@options{ :
+@tabsi :@children[o:Sass::Tree::MixinNode:
+@name"icon-double-arrows;@;	[ :@splat0:
+@lineiΩ:@keywords{"positiono:Sass::Script::String	:
+@type:identifier:@value"
+right;@;iΩ:
+@args[ ;iº:
+@rule["&:after:@parsed_ruleso:"Sass::Selector::CommaSequence:@filename" ;iº:@members[o:Sass::Selector::Sequence;[o:#Sass::Selector::SimpleSequence
+;@:@sourceso:Set:
+@hash{ ;iº:@subject0;[o:Sass::Selector::Parent;@;iºo:Sass::Selector::Pseudo
+;["
+after:	@arg0;@;iº:@syntactic_type:
+class[o:Sass::Tree::RuleNode:@has_childrenT;@:
+@tabsi :@children[o:Sass::Tree::MixinNode;"icon-double-arrows;@;[ :@splat0;iπ:@keywords{"positiono;	;	;
+;"	left;@;iπ:
+@args[ ;i∏:
+@rule["&:before:@parsed_ruleso:"Sass::Selector::CommaSequence:@filename" ;i∏:@members[o:Sass::Selector::Sequence; [o:#Sass::Selector::SimpleSequence
+;@:@sourceso:Set:
+@hash{ ;i∏:@subject0; [o:Sass::Selector::Parent;@;i∏o:Sass::Selector::Pseudo
+;["before:	@arg0;@;i∏:@syntactic_type:
+classu;BÜ[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::String	:
+@type:identifier:@value"	left;@:
+@linei¡;i¡:@operand1o:Sass::Script::Variable	:
+@name"position;@:@underscored_name"position;i¡:@operator:eq0[u:Sass::Tree::IfNode{[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::String	:
+@type:identifier:@value"rtl;@:
+@linei¬;i¬:@operand1o:Sass::Script::Variable	:
+@name"text-direction;@:@underscored_name"text_direction;i¬:@operator:equ:Sass::Tree::IfNodeU[00[o:Sass::Tree::RuleNode:@has_childrenT:@options{ :
+@tabsi :@children[o:Sass::Tree::MixinNode:
+@name"icon-double-arrows;@;	[ :@splat0:
+@linei»:@keywords{"positiono:Sass::Script::String	:
+@type:identifier:@value"	left;@;i»:
+@args[ ;i«:
+@rule["&:before:@parsed_ruleso:"Sass::Selector::CommaSequence:@filename" ;i«:@members[o:Sass::Selector::Sequence;[o:#Sass::Selector::SimpleSequence
+;@:@sourceso:Set:
+@hash{ ;i«:@subject0;[o:Sass::Selector::Parent;@;i«o:Sass::Selector::Pseudo
+;["before:	@arg0;@;i«:@syntactic_type:
+class[o:Sass::Tree::RuleNode:@has_childrenT;@:
+@tabsi :@children[o:Sass::Tree::MixinNode;"icon-double-arrows;@;[ :@splat0;iƒ:@keywords{"positiono;	;	;
+;"
+right;@;iƒ:
+@args[ ;i√:
+@rule["&:after:@parsed_ruleso:"Sass::Selector::CommaSequence:@filename" ;i√:@members[o:Sass::Selector::Sequence; [o:#Sass::Selector::SimpleSequence
+;@:@sourceso:Set:
+@hash{ ;i√:@subject0; [o:Sass::Selector::Parent;@;i√o:Sass::Selector::Pseudo
+;["
+after:	@arg0;@;i√:@syntactic_type:
+class;i®;5[".back > a;6o;7;8" ;i®;9[o;:;9[o;;
+;8@;<o;=;>{ ;i®;?0;9[o;D;["	back;8@;i®">o;;
+;8@;<o;=;>{ ;i®;?0;9[o;L	;["a;8@;i®;A0;0;iã;[[o;;"position;@;"position0o;
+
+;;;["C/*Left double angle quote or Right double angle quote chars */;@;	[ ;iŒo;.;"icon-double-arrows;T;@;	[u;B∫[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::String	:
+@type:identifier:@value"	left;@:
+@linei–;i–:@operand1o:Sass::Script::Variable	:
+@name"position;@:@underscored_name"position;i–:@operator:eq0[o:Sass::Tree::PropNode;["content;o;;	;
+;"
+"\AB";@:@prop_syntax:new;@:
+@tabsi :@children[ ;i—u:Sass::Tree::IfNode@[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::String	:
+@type:identifier:@value"rtl;@:
+@linei“;i“:@operand1o:Sass::Script::Variable	:
+@name"text-direction;@:@underscored_name"text_direction;i“:@operator:equ:Sass::Tree::IfNode∏[00[o:Sass::Tree::PropNode:
+@name["margin-right:@valueo:Sass::Script::String:
+@type:identifier;"0.5rem:@options{ :@prop_syntax:new;@:
+@tabsi :@children[ :
+@linei’[o:Sass::Tree::PropNode;["margin-left;o;;	;
+;"0.5rem;@:@prop_syntax:new;@:
+@tabsi :@children[ ;i”u;Bª[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::String	:
+@type:identifier:@value"
+right;@:
+@lineiÿ;iÿ:@operand1o:Sass::Script::Variable	:
+@name"position;@:@underscored_name"position;iÿ:@operator:eq0[o:Sass::Tree::PropNode;["content;o;;	;
+;"
+"\BB";@:@prop_syntax:new;@:
+@tabsi :@children[ ;iŸu:Sass::Tree::IfNode@[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::String	:
+@type:identifier:@value"rtl;@:
+@linei⁄;i⁄:@operand1o:Sass::Script::Variable	:
+@name"text-direction;@:@underscored_name"text_direction;i⁄:@operator:equ:Sass::Tree::IfNode∑[00[o:Sass::Tree::PropNode:
+@name["margin-left:@valueo:Sass::Script::String:
+@type:identifier;"0.5rem:@options{ :@prop_syntax:new;@:
+@tabsi :@children[ :
+@linei›[o:Sass::Tree::PropNode;["margin-right;o;;	;
+;"0.5rem;@:@prop_syntax:new;@:
+@tabsi :@children[ ;i€o;/;["display;o;#;;$;"inline;@;0;1;@;2i ;	[ ;i‡;0;iœ;[[o;;"position;@;"position0u;BÆ[o:Sass::Script::Variable	:
+@name"$include-html-off-canvas-classes:@options{ :@underscored_name"$include_html_off_canvas_classes:
+@linei„0[o:Sass::Tree::RuleNode:@has_childrenT;@:
+@tabsi :@children[o:Sass::Tree::MixinNode;"off-canvas-submenu;@;[ :@splat0;	iÂ:@keywords{"positiono:Sass::Script::String	:
+@type:identifier:@value"	left;@;	iÂ:
+@args[ o;
+;T;@;i ;[o;;"translate3d;@;[ ;0;	iÁ;{ ;[o:Sass::Script::Number:@numerator_units["%;i :@original"0%;@;	iÁ:@denominator_units[ o;;[ ;i ;"0;@;	iÁ;[ o;;[ ;i ;"0;@;	iÁ;@$;	iÊ:
+@rule["&.move-right:@parsed_ruleso:"Sass::Selector::CommaSequence:@filename" ;	iÊ:@members[o:Sass::Selector::Sequence;[o:#Sass::Selector::SimpleSequence
+;@+:@sourceso:Set:
+@hash{ ;	iÊ:@subject0;[o:Sass::Selector::Parent;@+;	iÊo:Sass::Selector::Class;["move-right;@+;	iÊ;	i‰;[".left-submenu;o;;" ;	i‰;[o;;[o; 
+;@:;!o;";#{ ;	i‰;$0;[o;&;["left-submenu;@:;	i‰o;
+;T;@;i ;[o;;"off-canvas-submenu;@;[ ;0;	iÏ;{"positiono;	;;;"
+right;@;	iÏ;[ o;
+;T;@;i ;[o;;"translate3d;@;[ ;0;	iÓ;{ ;[o;;["%;i ;"0%;@;	iÓ;[ o;;[ ;i ;"0;@;	iÓ;@$o;;[ ;i ;"0;@;	iÓ;@$;	iÌ;["&.move-left;o;;" ;	iÌ;[o;;[o; 
+;@d;!o;";#{ ;	iÌ;$0;[o;%;@d;	iÌo;&;["move-left;@d;	iÌ;	iÎ;[".right-submenu;o;;" ;	iÎ;[o;;[o; 
+;@s;!o;";#{ ;	iÎ;$0;[o;&;["right-submenu;@s;	iÎu:Sass::Tree::IfNodeé[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::String	:
+@type:identifier:@value"rtl;@:
+@lineiÚ;iÚ:@operand1o:Sass::Script::Variable	:
+@name"text-direction;@:@underscored_name"text_direction;iÚ:@operator:equ:Sass::Tree::IfNodeﬁ[00[o:Sass::Tree::RuleNode:@has_childrenT:@options{ :
+@tabsi :@children[o:Sass::Tree::MixinNode:
+@name"icon-double-arrows;@;	[ :@splat0:
+@linei˚:@keywords{"positiono:Sass::Script::String	:
+@type:identifier:@value"
+right;@;i˚:
+@args[ ;i˙:
+@rule["F.left-off-canvas-menu ul.off-canvas-list li.has-submenu > a:after:@parsed_ruleso:"Sass::Selector::CommaSequence:@filename" ;i˙:@members[o:Sass::Selector::Sequence;[
+o:#Sass::Selector::SimpleSequence
+;@:@sourceso:Set:
+@hash{ ;i˙:@subject0;[o:Sass::Selector::Class;["left-off-canvas-menu;@;i˙o;
+;@;o;;{ ;i˙;0;[o:Sass::Selector::Element	;["ul;@;i˙:@namespace0o;;["off-canvas-list;@;i˙o;
+;@;o;;{ ;i˙;0;[o; 	;["li;@;i˙;!0o;;["has-submenu;@;i˙">o;
+;@;o;;{ ;i˙;0;[o; 	;["a;@;i˙;!0o:Sass::Selector::Pseudo
+;["
+after:	@arg0;@;i˙:@syntactic_type:
+classo; ;T;@;i ;	[o;
+;"icon-double-arrows;@;	[ ;0;i˛;{"positiono;	;;;"	left;@;i˛;[ ;i˝;["H.right-off-canvas-menu ul.off-canvas-list li.has-submenu > a:before;o;;" ;i˝;[o;;[
+o;
+;@L;o;;{ ;i˝;0;[o;;["right-off-canvas-menu;@L;i˝o;
+;@L;o;;{ ;i˝;0;[o; 	;["ul;@L;i˝;!0o;;["off-canvas-list;@L;i˝o;
+;@L;o;;{ ;i˝;0;[o; 	;["li;@L;i˝;!0o;;["has-submenu;@L;i˝">o;
+;@L;o;;{ ;i˝;0;[o; 	;["a;@L;i˝;!0o;"
+;["before;#0;@L;i˝;$;%[o:Sass::Tree::RuleNode:@has_childrenT;@:
+@tabsi :@children[o:Sass::Tree::MixinNode;"icon-double-arrows;@;[ :@splat0;iÙ:@keywords{"positiono;	;	;
+;"	left;@;iÙ:
+@args[ ;iÛ:
+@rule["G.left-off-canvas-menu ul.off-canvas-list li.has-submenu > a:before:@parsed_ruleso:"Sass::Selector::CommaSequence:@filename" ;iÛ:@members[o:Sass::Selector::Sequence; [
+o:#Sass::Selector::SimpleSequence
+;@:@sourceso:Set:
+@hash{ ;iÛ:@subject0; [o:Sass::Selector::Class;["left-off-canvas-menu;@;iÛo;"
+;@;#o;$;%{ ;iÛ;&0; [o:Sass::Selector::Element	;["ul;@;iÛ:@namespace0o;';["off-canvas-list;@;iÛo;"
+;@;#o;$;%{ ;iÛ;&0; [o;(	;["li;@;iÛ;)0o;';["has-submenu;@;iÛ">o;"
+;@;#o;$;%{ ;iÛ;&0; [o;(	;["a;@;iÛ;)0o:Sass::Selector::Pseudo
+;["before:	@arg0;@;iÛ:@syntactic_type:
+classo;;T;@;i ;[o;;"icon-double-arrows;@;[ ;0;i˜;{"positiono;	;	;
+;"
+right;@;i˜;[ ;iˆ;["G.right-off-canvas-menu ul.off-canvas-list li.has-submenu > a:after;o;;" ;iˆ; [o;!; [
+o;"
+;@S;#o;$;%{ ;iˆ;&0; [o;';["right-off-canvas-menu;@S;iˆo;"
+;@S;#o;$;%{ ;iˆ;&0; [o;(	;["ul;@S;iˆ;)0o;';["off-canvas-list;@S;iˆo;"
+;@S;#o;$;%{ ;iˆ;&0; [o;(	;["li;@S;iˆ;)0o;';["has-submenu;@S;iˆ">o;"
+;@S;#o;$;%{ ;iˆ;&0; [o;(	;["a;@S;iˆ;)0o;*
+;["
+after;+0;@S;iˆ;,;-;i

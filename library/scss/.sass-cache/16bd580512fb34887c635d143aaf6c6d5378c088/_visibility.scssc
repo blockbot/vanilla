@@ -1,0 +1,1891 @@
+3.2.19 (Media Mark)
+5ba5f79b182b40829d93c3d86a529aeb6d1aca2d
+o:Sass::Tree::RootNode
+:@template"QN// Foundation by ZURB
+// foundation.zurb.com
+// Licensed under MIT Open Source
+
+@import "global";
+
+//
+// Foundation Visibility Classes
+//
+$include-html-visibility-classes: $include-html-classes !default;
+$include-accessibility-classes: true !default;
+$include-table-visibility-classes: true !default;
+$include-legacy-visibility-classes: true !default;
+
+//
+// Media Class Names
+//
+// Visibility Breakpoints
+$visibility-breakpoint-sizes:
+  small,
+  medium,
+  large,
+  xlarge,
+  xxlarge;
+
+$visibility-breakpoint-queries:
+  unquote($small-up),
+  unquote($medium-up),
+  unquote($large-up),
+  unquote($xlarge-up),
+  unquote($xxlarge-up);
+
+@mixin visibility-loop {
+  @each $current-visibility-breakpoint in $visibility-breakpoint-sizes {
+    $visibility-inherit-list: ();
+    $visibility-none-list: ();
+
+    $visibility-visible-list: ();
+    $visibility-hidden-list: ();
+
+    $visibility-table-list: ();
+    $visibility-table-header-group-list: ();
+    $visibility-table-row-group-list: ();
+    $visibility-table-row-list: ();
+    $visibility-table-cell-list: ();
+
+    @each $visibility-comparison-breakpoint in $visibility-breakpoint-sizes {
+      @if index($visibility-breakpoint-sizes, $visibility-comparison-breakpoint) < index($visibility-breakpoint-sizes, $current-visibility-breakpoint) {
+        // Smaller than current breakpoint
+
+        $visibility-inherit-list: append($visibility-inherit-list, unquote(
+          '.hide-for-#{$visibility-comparison-breakpoint}-only, .show-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-none-list: append($visibility-none-list, unquote(
+          '.show-for-#{$visibility-comparison-breakpoint}-only, .hide-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-visible-list: append($visibility-visible-list, unquote(
+          '.hidden-for-#{$visibility-comparison-breakpoint}-only, .visible-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-hidden-list: append($visibility-hidden-list, unquote(
+          '.visible-for-#{$visibility-comparison-breakpoint}-only, .hidden-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-table-list: append($visibility-table-list, unquote(
+          'table.hide-for-#{$visibility-comparison-breakpoint}-only, table.show-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-table-header-group-list: append($visibility-table-header-group-list, unquote(
+          'thead.hide-for-#{$visibility-comparison-breakpoint}-only, thead.show-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-table-row-group-list: append($visibility-table-row-group-list, unquote(
+          'tbody.hide-for-#{$visibility-comparison-breakpoint}-only, tbody.show-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-table-row-list: append($visibility-table-row-list, unquote(
+          'tr.hide-for-#{$visibility-comparison-breakpoint}-only, tr.show-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-table-cell-list: append($visibility-table-cell-list, unquote(
+          'th.hide-for-#{$visibility-comparison-breakpoint}-only, td.hide-for-#{$visibility-comparison-breakpoint}-only, th.show-for-#{$visibility-comparison-breakpoint}-up, td.show-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+
+        // Foundation 4 compatibility:
+        // Include .show/hide-for-[size] and .show/hide-for-[size]-down classes
+        // for small, medium, and large breakpoints only
+        @if $include-legacy-visibility-classes and index((small, medium, large), $visibility-comparison-breakpoint) != false {
+          $visibility-inherit-list: append($visibility-inherit-list, unquote(
+            '.hide-for-#{$visibility-comparison-breakpoint}, .hide-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-none-list: append($visibility-none-list, unquote(
+            '.show-for-#{$visibility-comparison-breakpoint}, .show-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-visible-list: append($visibility-visible-list, unquote(
+            '.hidden-for-#{$visibility-comparison-breakpoint}, .hidden-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-hidden-list: append($visibility-hidden-list, unquote(
+            '.visible-for-#{$visibility-comparison-breakpoint}, .visible-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-table-list: append($visibility-table-list, unquote(
+            'table.hide-for-#{$visibility-comparison-breakpoint}, table.hide-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-table-header-group-list: append($visibility-table-header-group-list, unquote(
+            'thead.hide-for-#{$visibility-comparison-breakpoint}, thead.hide-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-table-row-group-list: append($visibility-table-row-group-list, unquote(
+            'tbody.hide-for-#{$visibility-comparison-breakpoint}, tbody.hide-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-table-row-list: append($visibility-table-row-list, unquote(
+            'tr.hide-for-#{$visibility-comparison-breakpoint}, tr.hide-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-table-cell-list: append($visibility-table-cell-list, unquote(
+            'th.hide-for-#{$visibility-comparison-breakpoint}, td.hide-for-#{$visibility-comparison-breakpoint}, th.hide-for-#{$visibility-comparison-breakpoint}-down, td.hide-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+        }
+
+      } @else if index($visibility-breakpoint-sizes, $visibility-comparison-breakpoint) > index($visibility-breakpoint-sizes, $current-visibility-breakpoint) {
+        // Larger than current breakpoint
+
+        $visibility-inherit-list: append($visibility-inherit-list, unquote(
+          '.hide-for-#{$visibility-comparison-breakpoint}-only, .hide-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-none-list: append($visibility-none-list, unquote(
+          '.show-for-#{$visibility-comparison-breakpoint}-only, .show-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-visible-list: append($visibility-visible-list, unquote(
+          '.hidden-for-#{$visibility-comparison-breakpoint}-only, .hidden-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-hidden-list: append($visibility-hidden-list, unquote(
+          '.visible-for-#{$visibility-comparison-breakpoint}-only, .visible-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-table-list: append($visibility-table-list, unquote(
+          'table.hide-for-#{$visibility-comparison-breakpoint}-only, table.hide-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-table-header-group-list: append($visibility-table-header-group-list, unquote(
+          'thead.hide-for-#{$visibility-comparison-breakpoint}-only, thead.hide-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-table-row-group-list: append($visibility-table-row-group-list, unquote(
+          'tbody.hide-for-#{$visibility-comparison-breakpoint}-only, tbody.hide-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-table-row-list: append($visibility-table-row-list, unquote(
+          'tr.hide-for-#{$visibility-comparison-breakpoint}-only, tr.hide-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-table-cell-list: append($visibility-table-cell-list, unquote(
+          'th.hide-for-#{$visibility-comparison-breakpoint}-only, td.hide-for-#{$visibility-comparison-breakpoint}-only, th.hide-for-#{$visibility-comparison-breakpoint}-up, td.hide-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+
+        // Foundation 4 compatibility:
+        // Include .show/hide-for-[size] and .show/hide-for-[size]-down classes
+        // for small, medium, and large breakpoints only
+        @if $include-legacy-visibility-classes and index((small, medium, large), $visibility-comparison-breakpoint) != false {
+          $visibility-inherit-list: append($visibility-inherit-list, unquote(
+            '.hide-for-#{$visibility-comparison-breakpoint}, .show-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-none-list: append($visibility-none-list, unquote(
+            '.show-for-#{$visibility-comparison-breakpoint}, .hide-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-visible-list: append($visibility-visible-list, unquote(
+            '.hidden-for-#{$visibility-comparison-breakpoint}, .visible-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-hidden-list: append($visibility-hidden-list, unquote(
+            '.visible-for-#{$visibility-comparison-breakpoint}, .hidden-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-table-list: append($visibility-table-list, unquote(
+            'table.hide-for-#{$visibility-comparison-breakpoint}, table.show-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-table-header-group-list: append($visibility-table-header-group-list, unquote(
+            'thead.hide-for-#{$visibility-comparison-breakpoint}, thead.show-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-table-row-group-list: append($visibility-table-row-group-list, unquote(
+            'tbody.hide-for-#{$visibility-comparison-breakpoint}, tbody.show-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-table-row-list: append($visibility-table-row-list, unquote(
+            'tr.hide-for-#{$visibility-comparison-breakpoint}, tr.show-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-table-cell-list: append($visibility-table-cell-list, unquote(
+            'th.hide-for-#{$visibility-comparison-breakpoint}, td.hide-for-#{$visibility-comparison-breakpoint}, th.show-for-#{$visibility-comparison-breakpoint}-down, td.show-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+        }
+
+      } @else {
+        // Current breakpoint
+
+        $visibility-inherit-list: append($visibility-inherit-list, unquote(
+          '.show-for-#{$visibility-comparison-breakpoint}-only, .show-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-none-list: append($visibility-none-list, unquote(
+          '.hide-for-#{$visibility-comparison-breakpoint}-only, .hide-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-visible-list: append($visibility-visible-list, unquote(
+          '.visible-for-#{$visibility-comparison-breakpoint}-only, .visible-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-hidden-list: append($visibility-hidden-list, unquote(
+          '.hidden-for-#{$visibility-comparison-breakpoint}-only, .hidden-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-table-list: append($visibility-table-list, unquote(
+          'table.show-for-#{$visibility-comparison-breakpoint}-only, table.show-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-table-header-group-list: append($visibility-table-header-group-list, unquote(
+          'thead.show-for-#{$visibility-comparison-breakpoint}-only, thead.show-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-table-row-group-list: append($visibility-table-row-group-list, unquote(
+          'tbody.show-for-#{$visibility-comparison-breakpoint}-only, tbody.show-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-table-row-list: append($visibility-table-row-list, unquote(
+          'tr.show-for-#{$visibility-comparison-breakpoint}-only, tr.show-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+        $visibility-table-cell-list: append($visibility-table-cell-list, unquote(
+          'th.show-for-#{$visibility-comparison-breakpoint}-only, td.show-for-#{$visibility-comparison-breakpoint}-only, th.show-for-#{$visibility-comparison-breakpoint}-up, td.show-for-#{$visibility-comparison-breakpoint}-up'
+        ), comma);
+
+        // Foundation 4 compatibility:
+        // Include .show/hide-for-[size] and .show/hide-for-[size]-down classes
+        // for small, medium, and large breakpoints only
+        @if $include-legacy-visibility-classes and index((small, medium, large), $visibility-comparison-breakpoint) != false {
+          $visibility-inherit-list: append($visibility-inherit-list, unquote(
+            '.show-for-#{$visibility-comparison-breakpoint}, .show-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-none-list: append($visibility-none-list, unquote(
+            '.hide-for-#{$visibility-comparison-breakpoint}, .hide-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-visible-list: append($visibility-visible-list, unquote(
+            '.visible-for-#{$visibility-comparison-breakpoint}, .visible-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-hidden-list: append($visibility-hidden-list, unquote(
+            '.hidden-for-#{$visibility-comparison-breakpoint}, .hidden-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-table-list: append($visibility-table-list, unquote(
+            'table.show-for-#{$visibility-comparison-breakpoint}, table.show-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-table-header-group-list: append($visibility-table-header-group-list, unquote(
+            'thead.show-for-#{$visibility-comparison-breakpoint}, thead.show-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-table-row-group-list: append($visibility-table-row-group-list, unquote(
+            'tbody.show-for-#{$visibility-comparison-breakpoint}, tbody.show-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-table-row-list: append($visibility-table-row-list, unquote(
+            'tr.show-for-#{$visibility-comparison-breakpoint}, tr.show-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+          $visibility-table-cell-list: append($visibility-table-cell-list, unquote(
+            'th.show-for-#{$visibility-comparison-breakpoint}, td.show-for-#{$visibility-comparison-breakpoint}, th.show-for-#{$visibility-comparison-breakpoint}-down, td.show-for-#{$visibility-comparison-breakpoint}-down'
+          ), comma);
+        }
+      }
+    }
+
+    /* #{$current-visibility-breakpoint} displays */
+    @media #{nth($visibility-breakpoint-queries, index($visibility-breakpoint-sizes, $current-visibility-breakpoint))} {
+      #{$visibility-inherit-list} {
+        display: inherit !important;
+      }
+      #{$visibility-none-list} {
+        display: none !important;
+      }
+      @if $include-accessibility-classes != false {
+        #{$visibility-visible-list} {
+          @include element-invisible-off;
+        }
+        #{$visibility-hidden-list} {
+          @include element-invisible;
+        }
+      }
+      @if $include-table-visibility-classes != false {
+        #{$visibility-table-list} {
+          display: table;
+        }
+        #{$visibility-table-header-group-list} {
+          display: table-header-group !important;
+        }
+        #{$visibility-table-row-group-list} {
+          display: table-row-group !important;
+        }
+        #{$visibility-table-row-list} {
+          display: table-row !important;
+        }
+        #{$visibility-table-cell-list} {
+          display: table-cell !important;
+        }
+      }
+    }
+  }
+}
+
+
+@if $include-html-visibility-classes != false {
+
+  @include visibility-loop;
+
+  /* Orientation targeting */
+  .show-for-landscape,
+  .hide-for-portrait { display: inherit !important; }
+  .hide-for-landscape,
+  .show-for-portrait { display: none !important; }
+
+  /* Specific visibility for tables */
+  table {
+    &.hide-for-landscape,
+    &.show-for-portrait { display: table; }
+  }
+  thead {
+    &.hide-for-landscape,
+    &.show-for-portrait { display: table-header-group !important; }
+  }
+  tbody {
+    &.hide-for-landscape,
+    &.show-for-portrait { display: table-row-group !important; }
+  }
+  tr {
+    &.hide-for-landscape,
+    &.show-for-portrait { display: table-row !important; }
+  }
+  td,
+  th {
+    &.hide-for-landscape,
+    &.show-for-portrait { display: table-cell !important; }
+  }
+
+  @media #{$landscape} {
+    .show-for-landscape,
+    .hide-for-portrait { display: inherit !important; }
+    .hide-for-landscape,
+    .show-for-portrait { display: none !important; }
+
+    /* Specific visibility for tables */
+    table {
+      &.show-for-landscape,
+      &.hide-for-portrait { display: table; }
+    }
+    thead {
+      &.show-for-landscape,
+      &.hide-for-portrait { display: table-header-group !important; }
+    }
+    tbody {
+      &.show-for-landscape,
+      &.hide-for-portrait { display: table-row-group !important; }
+    }
+    tr {
+      &.show-for-landscape,
+      &.hide-for-portrait { display: table-row !important; }
+    }
+    td,
+    th {
+      &.show-for-landscape,
+      &.hide-for-portrait { display: table-cell !important; }
+    }
+  }
+
+  @media #{$portrait} {
+    .show-for-portrait,
+    .hide-for-landscape { display: inherit !important; }
+    .hide-for-portrait,
+    .show-for-landscape { display: none !important; }
+
+    /* Specific visibility for tables */
+    table {
+      &.show-for-portrait,
+      &.hide-for-landscape { display: table; }
+    }
+    thead {
+      &.show-for-portrait,
+      &.hide-for-landscape { display: table-header-group !important; }
+    }
+    tbody {
+      &.show-for-portrait,
+      &.hide-for-landscape { display: table-row-group !important; }
+    }
+    tr {
+      &.show-for-portrait,
+      &.hide-for-landscape { display: table-row !important; }
+    }
+    td,
+    th {
+      &.show-for-portrait,
+      &.hide-for-landscape { display: table-cell !important; }
+    }
+  }
+
+  /* Touch-enabled device targeting */
+  .show-for-touch { display: none !important; }
+  .hide-for-touch { display: inherit !important; }
+  .touch .show-for-touch { display: inherit !important; }
+  .touch .hide-for-touch { display: none !important; }
+
+  /* Specific visibility for tables */
+  table.hide-for-touch { display: table; }
+  .touch table.show-for-touch { display: table; }
+  thead.hide-for-touch { display: table-header-group !important; }
+  .touch thead.show-for-touch { display: table-header-group !important; }
+  tbody.hide-for-touch { display: table-row-group !important; }
+  .touch tbody.show-for-touch { display: table-row-group !important; }
+  tr.hide-for-touch { display: table-row !important; }
+  .touch tr.show-for-touch { display: table-row !important; }
+  td.hide-for-touch { display: table-cell !important; }
+  .touch td.show-for-touch { display: table-cell !important; }
+  th.hide-for-touch { display: table-cell !important; }
+  .touch th.show-for-touch { display: table-cell !important; }
+
+
+  /* Print visibility */
+  @media print {
+    .show-for-print { display: block; }
+    .hide-for-print { display: none; }
+
+    table.show-for-print { display: table; }
+    thead.show-for-print { display: table-header-group !important; }
+    tbody.show-for-print { display: table-row-group !important; }
+    tr.show-for-print { display: table-row !important; }
+    td.show-for-print { display: table-cell !important; }
+    th.show-for-print { display: table-cell !important; }
+
+  }
+
+}
+:@has_childrenT:@options{ :@children[o:Sass::Tree::CommentNode
+:
+@type:silent:@value["V/* Foundation by ZURB
+ * foundation.zurb.com
+ * Licensed under MIT Open Source */;@;	[ :
+@lineio:Sass::Tree::ImportNode:@imported_filename"global;0;@;	[ ;i
+:@imported_file0o;
+
+;;;["./*
+ * Foundation Visibility Classes
+ * */;@;	[ ;io:Sass::Tree::VariableNode:
+@expro:Sass::Script::Variable	:
+@name"include-html-classes;@:@underscored_name"include_html_classes;i;"$include-html-visibility-classes;@;	[ ;i:@guarded"!defaulto;;o:Sass::Script::Bool;T;@;i;""include-accessibility-classes;@;	[ ;i;"!defaulto;;o;;T;@;i;"%include-table-visibility-classes;@;	[ ;i;"!defaulto;;o;;T;@;i;"&include-legacy-visibility-classes;@;	[ ;i;"!defaulto;
+
+;;;["</*
+ * Media Class Names
+ *
+ * Visibility Breakpoints */;@;	[ ;io;;o:Sass::Script::List	;[
+o:Sass::Script::String	;:identifier;"
+small;@;io;	;;;"medium;@;io;	;;;"
+large;@;io;	;;;"xlarge;@;io;	;;;"xxlarge;@;i;@:@separator:
+comma;i;" visibility-breakpoint-sizes;@;	[ ;i;0o;;o;	;[
+o:Sass::Script::Funcall;"unquote;@:@splat0;i :@keywords{ :
+@args[o;	;"small-up;@;"small_up;i o;;"unquote;@;0;i!; { ;![o;	;"medium-up;@;"medium_up;i!o;;"unquote;@;0;i"; { ;![o;	;"large-up;@;"large_up;i"o;;"unquote;@;0;i#; { ;![o;	;"xlarge-up;@;"xlarge_up;i#o;;"unquote;@;0;i$; { ;![o;	;"xxlarge-up;@;"xxlarge_up;i$;@;;;i ;""visibility-breakpoint-queries;@;	[ ;i$;0o:Sass::Tree::MixinDefNode;"visibility-loop;T;@;	[o:Sass::Tree::EachNode;T;@:	@var""current-visibility-breakpoint;	[o;;o;	;[ ;@;:
+space;i(;"visibility-inherit-list;@;	[ ;i(;0o;;o;	;[ ;@;;%;i);"visibility-none-list;@;	[ ;i);0o;;o;	;[ ;@;;%;i+;"visibility-visible-list;@;	[ ;i+;0o;;o;	;[ ;@;;%;i,;"visibility-hidden-list;@;	[ ;i,;0o;;o;	;[ ;@;;%;i.;"visibility-table-list;@;	[ ;i.;0o;;o;	;[ ;@;;%;i/;"'visibility-table-header-group-list;@;	[ ;i/;0o;;o;	;[ ;@;;%;i0;"$visibility-table-row-group-list;@;	[ ;i0;0o;;o;	;[ ;@;;%;i1;"visibility-table-row-list;@;	[ ;i1;0o;;o;	;[ ;@;;%;i2;"visibility-table-cell-list;@;	[ ;i2;0o;#;T;@;$"%visibility-comparison-breakpoint;	[u:Sass::Tree::IfNode˘Ö[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::Funcall:
+@name"
+index;@:@splat0:
+@linei5:@keywords{ :
+@args[o:Sass::Script::Variable	;	" visibility-breakpoint-sizes;@:@underscored_name" visibility_breakpoint_sizes;i5o;	;	""current-visibility-breakpoint;@;""current_visibility_breakpoint;i5;i5:@operand1o;;	"
+index;@;
+0;i5;{ ;[o;	;	" visibility-breakpoint-sizes;@;" visibility_breakpoint_sizes;i5o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;i5:@operator:ltu:Sass::Tree::IfNodeKY[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::Funcall:
+@name"
+index;@:@splat0:
+@lineiu:@keywords{ :
+@args[o:Sass::Script::Variable	;	" visibility-breakpoint-sizes;@:@underscored_name" visibility_breakpoint_sizes;iuo;	;	""current-visibility-breakpoint;@;""current_visibility_breakpoint;iu;iu:@operand1o;;	"
+index;@;
+0;iu;{ ;[o;	;	" visibility-breakpoint-sizes;@;" visibility_breakpoint_sizes;iuo;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iu:@operator:gtu:Sass::Tree::IfNodeœ+[00[o:Sass::Tree::CommentNode
+:
+@type:silent:@value["/* Current breakpoint */:@options{ :@children[ :
+@linei±o:Sass::Tree::VariableNode:
+@expro:Sass::Script::Funcall:
+@name"append;	@
+:@splat0;iµ:@keywords{ :
+@args[o:Sass::Script::Variable	;"visibility-inherit-list;	@
+:@underscored_name"visibility_inherit_list;i≥o;;"unquote;	@
+;0;iµ;{ ;[o:&Sass::Script::StringInterpolation
+:@aftero;
+;o:Sass::Script::String	;:string;"-up;	@
+;i¥;	@
+:	@mido;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;i¥;i¥:@beforeo;	;;;"-only, .show-for-;	@
+;i¥;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;i¥;i¥;o;	;;;".show-for-;	@
+;i¥o;	;:identifier;"
+comma;	@
+;iµ;"visibility-inherit-list;	@
+;
+[ ;iµ:@guarded0o;;o;;"append;	@
+;0;i∏;{ ;[o;	;"visibility-none-list;	@
+;"visibility_none_list;i∂o;;"unquote;	@
+;0;i∏;{ ;[o;
+;o;
+;o;	;;;"-up;	@
+;i∑;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;i∑;i∑;o;	;;;"-only, .hide-for-;	@
+;i∑;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;i∑;i∑;o;	;;;".hide-for-;	@
+;i∑o;	;;;"
+comma;	@
+;i∏;"visibility-none-list;	@
+;
+[ ;i∏;0o;;o;;"append;	@
+;0;iª;{ ;[o;	;"visibility-visible-list;	@
+;"visibility_visible_list;iπo;;"unquote;	@
+;0;iª;{ ;[o;
+;o;
+;o;	;;;"-up;	@
+;i∫;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;i∫;i∫;o;	;;;"-only, .visible-for-;	@
+;i∫;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;i∫;i∫;o;	;;;".visible-for-;	@
+;i∫o;	;;;"
+comma;	@
+;iª;"visibility-visible-list;	@
+;
+[ ;iª;0o;;o;;"append;	@
+;0;iæ;{ ;[o;	;"visibility-hidden-list;	@
+;"visibility_hidden_list;iºo;;"unquote;	@
+;0;iæ;{ ;[o;
+;o;
+;o;	;;;"-up;	@
+;iΩ;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;iΩ;iΩ;o;	;;;"-only, .hidden-for-;	@
+;iΩ;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;iΩ;iΩ;o;	;;;".hidden-for-;	@
+;iΩo;	;;;"
+comma;	@
+;iæ;"visibility-hidden-list;	@
+;
+[ ;iæ;0o;;o;;"append;	@
+;0;i¡;{ ;[o;	;"visibility-table-list;	@
+;"visibility_table_list;iøo;;"unquote;	@
+;0;i¡;{ ;[o;
+;o;
+;o;	;;;"-up;	@
+;i¿;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;i¿;i¿;o;	;;;"-only, table.show-for-;	@
+;i¿;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;i¿;i¿;o;	;;;"table.show-for-;	@
+;i¿o;	;;;"
+comma;	@
+;i¡;"visibility-table-list;	@
+;
+[ ;i¡;0o;;o;;"append;	@
+;0;iƒ;{ ;[o;	;"'visibility-table-header-group-list;	@
+;"'visibility_table_header_group_list;i¬o;;"unquote;	@
+;0;iƒ;{ ;[o;
+;o;
+;o;	;;;"-up;	@
+;i√;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;i√;i√;o;	;;;"-only, thead.show-for-;	@
+;i√;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;i√;i√;o;	;;;"thead.show-for-;	@
+;i√o;	;;;"
+comma;	@
+;iƒ;"'visibility-table-header-group-list;	@
+;
+[ ;iƒ;0o;;o;;"append;	@
+;0;i«;{ ;[o;	;"$visibility-table-row-group-list;	@
+;"$visibility_table_row_group_list;i≈o;;"unquote;	@
+;0;i«;{ ;[o;
+;o;
+;o;	;;;"-up;	@
+;i∆;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;i∆;i∆;o;	;;;"-only, tbody.show-for-;	@
+;i∆;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;i∆;i∆;o;	;;;"tbody.show-for-;	@
+;i∆o;	;;;"
+comma;	@
+;i«;"$visibility-table-row-group-list;	@
+;
+[ ;i«;0o;;o;;"append;	@
+;0;i ;{ ;[o;	;"visibility-table-row-list;	@
+;"visibility_table_row_list;i»o;;"unquote;	@
+;0;i ;{ ;[o;
+;o;
+;o;	;;;"-up;	@
+;i…;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;i…;i…;o;	;;;"-only, tr.show-for-;	@
+;i…;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;i…;i…;o;	;;;"tr.show-for-;	@
+;i…o;	;;;"
+comma;	@
+;i ;"visibility-table-row-list;	@
+;
+[ ;i ;0o;;o;;"append;	@
+;0;iÕ;{ ;[o;	;"visibility-table-cell-list;	@
+;"visibility_table_cell_list;iÀo;;"unquote;	@
+;0;iÕ;{ ;[o;
+;o;
+;o;
+;o;
+;o;	;;;"-up;	@
+;iÃ;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;iÃ;iÃ;o;	;;;"-up, td.show-for-;	@
+;iÃ;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;iÃ;iÃ;o;	;;;"-only, th.show-for-;	@
+;iÃ;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;iÃ;iÃ;o;	;;;"-only, td.show-for-;	@
+;iÃ;	@
+;o;	;"%visibility-comparison-breakpoint;	@
+;"%visibility_comparison_breakpoint;iÃ;iÃ;o;	;;;"th.show-for-;	@
+;iÃo;	;;;"
+comma;	@
+;iÕ;"visibility-table-cell-list;	@
+;
+[ ;iÕ;0o; 
+;;;["ö/* Foundation 4 compatibility:
+ * Include .show/hide-for-[size] and .show/hide-for-[size]-down classes
+ * for small, medium, and large breakpoints only */;	@
+;
+[ ;iœu:Sass::Tree::IfNode4[o:Sass::Script::Operation
+:@options{ :@operand2o; 
+;@;o:Sass::Script::Bool:@valueF;@:
+@linei“;
+i“:@operand1o:Sass::Script::Funcall:
+@name"
+index;@:@splat0;
+i“:@keywords{ :
+@args[o:Sass::Script::List	;	[o:Sass::Script::String	:
+@type:identifier;	"
+small;@;
+i“o;	;;;	"medium;@;
+i“o;	;;;	"
+large;@;
+i“;@:@separator:
+comma;
+i“o:Sass::Script::Variable	;"%visibility-comparison-breakpoint;@:@underscored_name"%visibility_comparison_breakpoint;
+i“:@operator:neq;
+i“;o;	;"&include-legacy-visibility-classes;@;"&include_legacy_visibility_classes;
+i“;:and0[o:Sass::Tree::VariableNode:
+@expro;;"append;@;0;
+i’;{ ;[o;	;"visibility-inherit-list;@;"visibility_inherit_list;
+i”o;;"unquote;@;0;
+i’;{ ;[o:&Sass::Script::StringInterpolation
+:@aftero;
+;o;	;:string;	"
+-down;@;
+i‘;@:	@mido;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i‘;
+i‘:@beforeo;	;; ;	", .show-for-;@;
+i‘;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i‘;
+i‘;"o;	;; ;	".show-for-;@;
+i‘o;	;;;	"
+comma;@;
+i’;"visibility-inherit-list;@:@children[ ;
+i’:@guarded0o;;o;;"append;@;0;
+iÿ;{ ;[o;	;"visibility-none-list;@;"visibility_none_list;
+i÷o;;"unquote;@;0;
+iÿ;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+i◊;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i◊;
+i◊;"o;	;; ;	", .hide-for-;@;
+i◊;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i◊;
+i◊;"o;	;; ;	".hide-for-;@;
+i◊o;	;;;	"
+comma;@;
+iÿ;"visibility-none-list;@;#[ ;
+iÿ;$0o;;o;;"append;@;0;
+i€;{ ;[o;	;"visibility-visible-list;@;"visibility_visible_list;
+iŸo;;"unquote;@;0;
+i€;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+i⁄;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i⁄;
+i⁄;"o;	;; ;	", .visible-for-;@;
+i⁄;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i⁄;
+i⁄;"o;	;; ;	".visible-for-;@;
+i⁄o;	;;;	"
+comma;@;
+i€;"visibility-visible-list;@;#[ ;
+i€;$0o;;o;;"append;@;0;
+iﬁ;{ ;[o;	;"visibility-hidden-list;@;"visibility_hidden_list;
+i‹o;;"unquote;@;0;
+iﬁ;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+i›;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i›;
+i›;"o;	;; ;	", .hidden-for-;@;
+i›;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i›;
+i›;"o;	;; ;	".hidden-for-;@;
+i›o;	;;;	"
+comma;@;
+iﬁ;"visibility-hidden-list;@;#[ ;
+iﬁ;$0o;;o;;"append;@;0;
+i·;{ ;[o;	;"visibility-table-list;@;"visibility_table_list;
+iﬂo;;"unquote;@;0;
+i·;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+i‡;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i‡;
+i‡;"o;	;; ;	", table.show-for-;@;
+i‡;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i‡;
+i‡;"o;	;; ;	"table.show-for-;@;
+i‡o;	;;;	"
+comma;@;
+i·;"visibility-table-list;@;#[ ;
+i·;$0o;;o;;"append;@;0;
+i‰;{ ;[o;	;"'visibility-table-header-group-list;@;"'visibility_table_header_group_list;
+i‚o;;"unquote;@;0;
+i‰;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+i„;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i„;
+i„;"o;	;; ;	", thead.show-for-;@;
+i„;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i„;
+i„;"o;	;; ;	"thead.show-for-;@;
+i„o;	;;;	"
+comma;@;
+i‰;"'visibility-table-header-group-list;@;#[ ;
+i‰;$0o;;o;;"append;@;0;
+iÁ;{ ;[o;	;"$visibility-table-row-group-list;@;"$visibility_table_row_group_list;
+iÂo;;"unquote;@;0;
+iÁ;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+iÊ;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iÊ;
+iÊ;"o;	;; ;	", tbody.show-for-;@;
+iÊ;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iÊ;
+iÊ;"o;	;; ;	"tbody.show-for-;@;
+iÊo;	;;;	"
+comma;@;
+iÁ;"$visibility-table-row-group-list;@;#[ ;
+iÁ;$0o;;o;;"append;@;0;
+iÍ;{ ;[o;	;"visibility-table-row-list;@;"visibility_table_row_list;
+iËo;;"unquote;@;0;
+iÍ;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+iÈ;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iÈ;
+iÈ;"o;	;; ;	", tr.show-for-;@;
+iÈ;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iÈ;
+iÈ;"o;	;; ;	"tr.show-for-;@;
+iÈo;	;;;	"
+comma;@;
+iÍ;"visibility-table-row-list;@;#[ ;
+iÍ;$0o;;o;;"append;@;0;
+iÌ;{ ;[o;	;"visibility-table-cell-list;@;"visibility_table_cell_list;
+iÎo;;"unquote;@;0;
+iÌ;{ ;[o;
+;o;
+;o;
+;o;
+;o;	;; ;	"
+-down;@;
+iÏ;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iÏ;
+iÏ;"o;	;; ;	"-down, td.show-for-;@;
+iÏ;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iÏ;
+iÏ;"o;	;; ;	", th.show-for-;@;
+iÏ;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iÏ;
+iÏ;"o;	;; ;	", td.show-for-;@;
+iÏ;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iÏ;
+iÏ;"o;	;; ;	"th.show-for-;@;
+iÏo;	;;;	"
+comma;@;
+iÌ;"visibility-table-cell-list;@;#[ ;
+iÌ;$0[o:Sass::Tree::CommentNode
+:
+@type:silent:@value[")/* Larger than current breakpoint */;@:@children[ ;ivo:Sass::Tree::VariableNode:
+@expro;;	"append;@;
+0;iz;{ ;[o;	;	"visibility-inherit-list;@;"visibility_inherit_list;ixo;;	"unquote;@;
+0;iz;{ ;[o:&Sass::Script::StringInterpolation
+:@aftero;
+;o:Sass::Script::String	;:string;"-up;@;iy;@:	@mido;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iy;iy:@beforeo;	;;;"-only, .hide-for-;@;iy;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iy;iy; o;	;;;".hide-for-;@;iyo;	;:identifier;"
+comma;@;iz;	"visibility-inherit-list;@;[ ;iz:@guarded0o;;o;;	"append;@;
+0;i};{ ;[o;	;	"visibility-none-list;@;"visibility_none_list;i{o;;	"unquote;@;
+0;i};{ ;[o;
+;o;
+;o;	;;;"-up;@;i|;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;i|;i|; o;	;;;"-only, .show-for-;@;i|;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;i|;i|; o;	;;;".show-for-;@;i|o;	;;!;"
+comma;@;i};	"visibility-none-list;@;[ ;i};"0o;;o;;	"append;@;
+0;i{;{ ;[o;	;	"visibility-visible-list;@;"visibility_visible_list;i~o;;	"unquote;@;
+0;i{;{ ;[o;
+;o;
+;o;	;;;"-up;@;i;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;i;i; o;	;;;"-only, .hidden-for-;@;i;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;i;i; o;	;;;".hidden-for-;@;io;	;;!;"
+comma;@;i{;	"visibility-visible-list;@;[ ;i{;"0o;;o;;	"append;@;
+0;i~;{ ;[o;	;	"visibility-hidden-list;@;"visibility_hidden_list;i|o;;	"unquote;@;
+0;i~;{ ;[o;
+;o;
+;o;	;;;"-up;@;i};@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;i};i}; o;	;;;"-only, .visible-for-;@;i};@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;i};i}; o;	;;;".visible-for-;@;i}o;	;;!;"
+comma;@;i~;	"visibility-hidden-list;@;[ ;i~;"0o;;o;;	"append;@;
+0;iÅ;{ ;[o;	;	"visibility-table-list;@;"visibility_table_list;io;;	"unquote;@;
+0;iÅ;{ ;[o;
+;o;
+;o;	;;;"-up;@;iÄ;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iÄ;iÄ; o;	;;;"-only, table.hide-for-;@;iÄ;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iÄ;iÄ; o;	;;;"table.hide-for-;@;iÄo;	;;!;"
+comma;@;iÅ;	"visibility-table-list;@;[ ;iÅ;"0o;;o;;	"append;@;
+0;iÑ;{ ;[o;	;	"'visibility-table-header-group-list;@;"'visibility_table_header_group_list;iÇo;;	"unquote;@;
+0;iÑ;{ ;[o;
+;o;
+;o;	;;;"-up;@;iÉ;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iÉ;iÉ; o;	;;;"-only, thead.hide-for-;@;iÉ;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iÉ;iÉ; o;	;;;"thead.hide-for-;@;iÉo;	;;!;"
+comma;@;iÑ;	"'visibility-table-header-group-list;@;[ ;iÑ;"0o;;o;;	"append;@;
+0;iá;{ ;[o;	;	"$visibility-table-row-group-list;@;"$visibility_table_row_group_list;iÖo;;	"unquote;@;
+0;iá;{ ;[o;
+;o;
+;o;	;;;"-up;@;iÜ;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iÜ;iÜ; o;	;;;"-only, tbody.hide-for-;@;iÜ;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iÜ;iÜ; o;	;;;"tbody.hide-for-;@;iÜo;	;;!;"
+comma;@;iá;	"$visibility-table-row-group-list;@;[ ;iá;"0o;;o;;	"append;@;
+0;iä;{ ;[o;	;	"visibility-table-row-list;@;"visibility_table_row_list;iào;;	"unquote;@;
+0;iä;{ ;[o;
+;o;
+;o;	;;;"-up;@;iâ;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iâ;iâ; o;	;;;"-only, tr.hide-for-;@;iâ;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iâ;iâ; o;	;;;"tr.hide-for-;@;iâo;	;;!;"
+comma;@;iä;	"visibility-table-row-list;@;[ ;iä;"0o;;o;;	"append;@;
+0;iç;{ ;[o;	;	"visibility-table-cell-list;@;"visibility_table_cell_list;ião;;	"unquote;@;
+0;iç;{ ;[o;
+;o;
+;o;
+;o;
+;o;	;;;"-up;@;iå;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iå;iå; o;	;;;"-up, td.hide-for-;@;iå;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iå;iå; o;	;;;"-only, th.hide-for-;@;iå;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iå;iå; o;	;;;"-only, td.hide-for-;@;iå;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iå;iå; o;	;;;"th.hide-for-;@;iåo;	;;!;"
+comma;@;iç;	"visibility-table-cell-list;@;[ ;iç;"0o;
+;;;["ö/* Foundation 4 compatibility:
+ * Include .show/hide-for-[size] and .show/hide-for-[size]-down classes
+ * for small, medium, and large breakpoints only */;@;[ ;ièu;4[o:Sass::Script::Operation
+:@options{ :@operand2o; 
+;@;o:Sass::Script::Bool:@valueF;@:
+@lineií;
+ií:@operand1o:Sass::Script::Funcall:
+@name"
+index;@:@splat0;
+ií:@keywords{ :
+@args[o:Sass::Script::List	;	[o:Sass::Script::String	:
+@type:identifier;	"
+small;@;
+iío;	;;;	"medium;@;
+iío;	;;;	"
+large;@;
+ií;@:@separator:
+comma;
+iío:Sass::Script::Variable	;"%visibility-comparison-breakpoint;@:@underscored_name"%visibility_comparison_breakpoint;
+ií:@operator:neq;
+ií;o;	;"&include-legacy-visibility-classes;@;"&include_legacy_visibility_classes;
+ií;:and0[o:Sass::Tree::VariableNode:
+@expro;;"append;@;0;
+iï;{ ;[o;	;"visibility-inherit-list;@;"visibility_inherit_list;
+iìo;;"unquote;@;0;
+iï;{ ;[o:&Sass::Script::StringInterpolation
+:@aftero;
+;o;	;:string;	"
+-down;@;
+iî;@:	@mido;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iî;
+iî:@beforeo;	;; ;	", .show-for-;@;
+iî;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iî;
+iî;"o;	;; ;	".hide-for-;@;
+iîo;	;;;	"
+comma;@;
+iï;"visibility-inherit-list;@:@children[ ;
+iï:@guarded0o;;o;;"append;@;0;
+iò;{ ;[o;	;"visibility-none-list;@;"visibility_none_list;
+iño;;"unquote;@;0;
+iò;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+ió;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+ió;
+ió;"o;	;; ;	", .hide-for-;@;
+ió;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+ió;
+ió;"o;	;; ;	".show-for-;@;
+ióo;	;;;	"
+comma;@;
+iò;"visibility-none-list;@;#[ ;
+iò;$0o;;o;;"append;@;0;
+iõ;{ ;[o;	;"visibility-visible-list;@;"visibility_visible_list;
+iôo;;"unquote;@;0;
+iõ;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+iö;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iö;
+iö;"o;	;; ;	", .visible-for-;@;
+iö;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iö;
+iö;"o;	;; ;	".hidden-for-;@;
+iöo;	;;;	"
+comma;@;
+iõ;"visibility-visible-list;@;#[ ;
+iõ;$0o;;o;;"append;@;0;
+iû;{ ;[o;	;"visibility-hidden-list;@;"visibility_hidden_list;
+iúo;;"unquote;@;0;
+iû;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+iù;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iù;
+iù;"o;	;; ;	", .hidden-for-;@;
+iù;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iù;
+iù;"o;	;; ;	".visible-for-;@;
+iùo;	;;;	"
+comma;@;
+iû;"visibility-hidden-list;@;#[ ;
+iû;$0o;;o;;"append;@;0;
+i°;{ ;[o;	;"visibility-table-list;@;"visibility_table_list;
+iüo;;"unquote;@;0;
+i°;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+i†;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i†;
+i†;"o;	;; ;	", table.show-for-;@;
+i†;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i†;
+i†;"o;	;; ;	"table.hide-for-;@;
+i†o;	;;;	"
+comma;@;
+i°;"visibility-table-list;@;#[ ;
+i°;$0o;;o;;"append;@;0;
+i§;{ ;[o;	;"'visibility-table-header-group-list;@;"'visibility_table_header_group_list;
+i¢o;;"unquote;@;0;
+i§;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+i£;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i£;
+i£;"o;	;; ;	", thead.show-for-;@;
+i£;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i£;
+i£;"o;	;; ;	"thead.hide-for-;@;
+i£o;	;;;	"
+comma;@;
+i§;"'visibility-table-header-group-list;@;#[ ;
+i§;$0o;;o;;"append;@;0;
+iß;{ ;[o;	;"$visibility-table-row-group-list;@;"$visibility_table_row_group_list;
+i•o;;"unquote;@;0;
+iß;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+i¶;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i¶;
+i¶;"o;	;; ;	", tbody.show-for-;@;
+i¶;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i¶;
+i¶;"o;	;; ;	"tbody.hide-for-;@;
+i¶o;	;;;	"
+comma;@;
+iß;"$visibility-table-row-group-list;@;#[ ;
+iß;$0o;;o;;"append;@;0;
+i™;{ ;[o;	;"visibility-table-row-list;@;"visibility_table_row_list;
+i®o;;"unquote;@;0;
+i™;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+i©;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i©;
+i©;"o;	;; ;	", tr.show-for-;@;
+i©;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i©;
+i©;"o;	;; ;	"tr.hide-for-;@;
+i©o;	;;;	"
+comma;@;
+i™;"visibility-table-row-list;@;#[ ;
+i™;$0o;;o;;"append;@;0;
+i≠;{ ;[o;	;"visibility-table-cell-list;@;"visibility_table_cell_list;
+i´o;;"unquote;@;0;
+i≠;{ ;[o;
+;o;
+;o;
+;o;
+;o;	;; ;	"
+-down;@;
+i¨;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i¨;
+i¨;"o;	;; ;	"-down, td.show-for-;@;
+i¨;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i¨;
+i¨;"o;	;; ;	", th.show-for-;@;
+i¨;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i¨;
+i¨;"o;	;; ;	", td.hide-for-;@;
+i¨;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i¨;
+i¨;"o;	;; ;	"th.hide-for-;@;
+i¨o;	;;;	"
+comma;@;
+i≠;"visibility-table-cell-list;@;#[ ;
+i≠;$0[o:Sass::Tree::CommentNode
+:
+@type:silent:@value["*/* Smaller than current breakpoint */;@:@children[ ;i6o:Sass::Tree::VariableNode:
+@expro;;	"append;@;
+0;i:;{ ;[o;	;	"visibility-inherit-list;@;"visibility_inherit_list;i8o;;	"unquote;@;
+0;i:;{ ;[o:&Sass::Script::StringInterpolation
+:@aftero;
+;o:Sass::Script::String	;:string;"-up;@;i9;@:	@mido;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;i9;i9:@beforeo;	;;;"-only, .show-for-;@;i9;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;i9;i9; o;	;;;".hide-for-;@;i9o;	;:identifier;"
+comma;@;i:;	"visibility-inherit-list;@;[ ;i::@guarded0o;;o;;	"append;@;
+0;i=;{ ;[o;	;	"visibility-none-list;@;"visibility_none_list;i;o;;	"unquote;@;
+0;i=;{ ;[o;
+;o;
+;o;	;;;"-up;@;i<;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;i<;i<; o;	;;;"-only, .hide-for-;@;i<;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;i<;i<; o;	;;;".show-for-;@;i<o;	;;!;"
+comma;@;i=;	"visibility-none-list;@;[ ;i=;"0o;;o;;	"append;@;
+0;i@;{ ;[o;	;	"visibility-visible-list;@;"visibility_visible_list;i>o;;	"unquote;@;
+0;i@;{ ;[o;
+;o;
+;o;	;;;"-up;@;i?;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;i?;i?; o;	;;;"-only, .visible-for-;@;i?;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;i?;i?; o;	;;;".hidden-for-;@;i?o;	;;!;"
+comma;@;i@;	"visibility-visible-list;@;[ ;i@;"0o;;o;;	"append;@;
+0;iC;{ ;[o;	;	"visibility-hidden-list;@;"visibility_hidden_list;iAo;;	"unquote;@;
+0;iC;{ ;[o;
+;o;
+;o;	;;;"-up;@;iB;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iB;iB; o;	;;;"-only, .hidden-for-;@;iB;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iB;iB; o;	;;;".visible-for-;@;iBo;	;;!;"
+comma;@;iC;	"visibility-hidden-list;@;[ ;iC;"0o;;o;;	"append;@;
+0;iF;{ ;[o;	;	"visibility-table-list;@;"visibility_table_list;iDo;;	"unquote;@;
+0;iF;{ ;[o;
+;o;
+;o;	;;;"-up;@;iE;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iE;iE; o;	;;;"-only, table.show-for-;@;iE;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iE;iE; o;	;;;"table.hide-for-;@;iEo;	;;!;"
+comma;@;iF;	"visibility-table-list;@;[ ;iF;"0o;;o;;	"append;@;
+0;iI;{ ;[o;	;	"'visibility-table-header-group-list;@;"'visibility_table_header_group_list;iGo;;	"unquote;@;
+0;iI;{ ;[o;
+;o;
+;o;	;;;"-up;@;iH;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iH;iH; o;	;;;"-only, thead.show-for-;@;iH;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iH;iH; o;	;;;"thead.hide-for-;@;iHo;	;;!;"
+comma;@;iI;	"'visibility-table-header-group-list;@;[ ;iI;"0o;;o;;	"append;@;
+0;iL;{ ;[o;	;	"$visibility-table-row-group-list;@;"$visibility_table_row_group_list;iJo;;	"unquote;@;
+0;iL;{ ;[o;
+;o;
+;o;	;;;"-up;@;iK;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iK;iK; o;	;;;"-only, tbody.show-for-;@;iK;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iK;iK; o;	;;;"tbody.hide-for-;@;iKo;	;;!;"
+comma;@;iL;	"$visibility-table-row-group-list;@;[ ;iL;"0o;;o;;	"append;@;
+0;iO;{ ;[o;	;	"visibility-table-row-list;@;"visibility_table_row_list;iMo;;	"unquote;@;
+0;iO;{ ;[o;
+;o;
+;o;	;;;"-up;@;iN;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iN;iN; o;	;;;"-only, tr.show-for-;@;iN;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iN;iN; o;	;;;"tr.hide-for-;@;iNo;	;;!;"
+comma;@;iO;	"visibility-table-row-list;@;[ ;iO;"0o;;o;;	"append;@;
+0;iR;{ ;[o;	;	"visibility-table-cell-list;@;"visibility_table_cell_list;iPo;;	"unquote;@;
+0;iR;{ ;[o;
+;o;
+;o;
+;o;
+;o;	;;;"-up;@;iQ;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iQ;iQ; o;	;;;"-up, td.show-for-;@;iQ;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iQ;iQ; o;	;;;"-only, th.show-for-;@;iQ;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iQ;iQ; o;	;;;"-only, td.hide-for-;@;iQ;@;o;	;	"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;iQ;iQ; o;	;;;"th.hide-for-;@;iQo;	;;!;"
+comma;@;iR;	"visibility-table-cell-list;@;[ ;iR;"0o;
+;;;["ö/* Foundation 4 compatibility:
+ * Include .show/hide-for-[size] and .show/hide-for-[size]-down classes
+ * for small, medium, and large breakpoints only */;@;[ ;iTu;∏[o:Sass::Script::Operation
+:@options{ :@operand2o; 
+;@;o:Sass::Script::Bool:@valueF;@:
+@lineiW;
+iW:@operand1o:Sass::Script::Funcall:
+@name"
+index;@:@splat0;
+iW:@keywords{ :
+@args[o:Sass::Script::List	;	[o:Sass::Script::String	:
+@type:identifier;	"
+small;@;
+iWo;	;;;	"medium;@;
+iWo;	;;;	"
+large;@;
+iW;@:@separator:
+comma;
+iWo:Sass::Script::Variable	;"%visibility-comparison-breakpoint;@:@underscored_name"%visibility_comparison_breakpoint;
+iW:@operator:neq;
+iW;o;	;"&include-legacy-visibility-classes;@;"&include_legacy_visibility_classes;
+iW;:and0[o:Sass::Tree::VariableNode:
+@expro;;"append;@;0;
+iZ;{ ;[o;	;"visibility-inherit-list;@;"visibility_inherit_list;
+iXo;;"unquote;@;0;
+iZ;{ ;[o:&Sass::Script::StringInterpolation
+:@aftero;
+;o;	;:string;	"
+-down;@;
+iY;@:	@mido;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iY;
+iY:@beforeo;	;; ;	", .hide-for-;@;
+iY;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iY;
+iY;"o;	;; ;	".hide-for-;@;
+iYo;	;;;	"
+comma;@;
+iZ;"visibility-inherit-list;@:@children[ ;
+iZ:@guarded0o;;o;;"append;@;0;
+i];{ ;[o;	;"visibility-none-list;@;"visibility_none_list;
+i[o;;"unquote;@;0;
+i];{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+i\;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i\;
+i\;"o;	;; ;	", .show-for-;@;
+i\;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i\;
+i\;"o;	;; ;	".show-for-;@;
+i\o;	;;;	"
+comma;@;
+i];"visibility-none-list;@;#[ ;
+i];$0o;;o;;"append;@;0;
+i`;{ ;[o;	;"visibility-visible-list;@;"visibility_visible_list;
+i^o;;"unquote;@;0;
+i`;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+i_;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i_;
+i_;"o;	;; ;	", .hidden-for-;@;
+i_;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+i_;
+i_;"o;	;; ;	".hidden-for-;@;
+i_o;	;;;	"
+comma;@;
+i`;"visibility-visible-list;@;#[ ;
+i`;$0o;;o;;"append;@;0;
+ic;{ ;[o;	;"visibility-hidden-list;@;"visibility_hidden_list;
+iao;;"unquote;@;0;
+ic;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+ib;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+ib;
+ib;"o;	;; ;	", .visible-for-;@;
+ib;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+ib;
+ib;"o;	;; ;	".visible-for-;@;
+ibo;	;;;	"
+comma;@;
+ic;"visibility-hidden-list;@;#[ ;
+ic;$0o;;o;;"append;@;0;
+if;{ ;[o;	;"visibility-table-list;@;"visibility_table_list;
+ido;;"unquote;@;0;
+if;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+ie;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+ie;
+ie;"o;	;; ;	", table.hide-for-;@;
+ie;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+ie;
+ie;"o;	;; ;	"table.hide-for-;@;
+ieo;	;;;	"
+comma;@;
+if;"visibility-table-list;@;#[ ;
+if;$0o;;o;;"append;@;0;
+ii;{ ;[o;	;"'visibility-table-header-group-list;@;"'visibility_table_header_group_list;
+igo;;"unquote;@;0;
+ii;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+ih;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+ih;
+ih;"o;	;; ;	", thead.hide-for-;@;
+ih;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+ih;
+ih;"o;	;; ;	"thead.hide-for-;@;
+iho;	;;;	"
+comma;@;
+ii;"'visibility-table-header-group-list;@;#[ ;
+ii;$0o;;o;;"append;@;0;
+il;{ ;[o;	;"$visibility-table-row-group-list;@;"$visibility_table_row_group_list;
+ijo;;"unquote;@;0;
+il;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+ik;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+ik;
+ik;"o;	;; ;	", tbody.hide-for-;@;
+ik;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+ik;
+ik;"o;	;; ;	"tbody.hide-for-;@;
+iko;	;;;	"
+comma;@;
+il;"$visibility-table-row-group-list;@;#[ ;
+il;$0o;;o;;"append;@;0;
+io;{ ;[o;	;"visibility-table-row-list;@;"visibility_table_row_list;
+imo;;"unquote;@;0;
+io;{ ;[o;
+;o;
+;o;	;; ;	"
+-down;@;
+in;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+in;
+in;"o;	;; ;	", tr.hide-for-;@;
+in;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+in;
+in;"o;	;; ;	"tr.hide-for-;@;
+ino;	;;;	"
+comma;@;
+io;"visibility-table-row-list;@;#[ ;
+io;$0o;;o;;"append;@;0;
+ir;{ ;[o;	;"visibility-table-cell-list;@;"visibility_table_cell_list;
+ipo;;"unquote;@;0;
+ir;{ ;[o;
+;o;
+;o;
+;o;
+;o;	;; ;	"
+-down;@;
+iq;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iq;
+iq;"o;	;; ;	"-down, td.hide-for-;@;
+iq;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iq;
+iq;"o;	;; ;	", th.hide-for-;@;
+iq;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iq;
+iq;"o;	;; ;	", td.hide-for-;@;
+iq;@;!o;	;"%visibility-comparison-breakpoint;@;"%visibility_comparison_breakpoint;
+iq;
+iq;"o;	;; ;	"th.hide-for-;@;
+iqo;	;;;	"
+comma;@;
+ir;"visibility-table-cell-list;@;#[ ;
+ir;$0;i4:
+@listo;	;" visibility-breakpoint-sizes;@;" visibility_breakpoint_sizes;i4o;
+
+;:normal;["/* o;	;""current-visibility-breakpoint;{:filename"Ä/Users/joey/Sites/sandbox/ohmyilove/wp/wp-content/themes/infinite-photo-wall/library/scss/foundation/components/_visibility.scss;""current_visibility_breakpoint;iÚ" displays */;@;	[ ;iÚo:Sass::Tree::MediaNode;T;" ;@:
+@tabsi ;	[	o:Sass::Tree::RuleNode;T;@;+i ;	[o:Sass::Tree::PropNode;["display;o;;;;"inherit !important;@:@prop_syntax:new;@;+i ;	[ ;iı;iÙ:
+@rule[o;	;"visibility-inherit-list;@;"visibility_inherit_list;iÙo;,;T;@;+i ;	[o;-;["display;o;;;;"none !important;@;.;/;@;+i ;	[ ;i¯;i˜;0[o;	;"visibility-none-list;@;"visibility_none_list;i˜u;&Ä[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::Bool:@valueF;@:
+@linei˙;
+i˙:@operand1o:Sass::Script::Variable	:
+@name""include-accessibility-classes;@:@underscored_name""include_accessibility_classes;
+i˙:@operator:neq0[o:Sass::Tree::RuleNode:@has_childrenT;@:
+@tabsi :@children[o:Sass::Tree::MixinNode;"element-invisible-off;@;[ :@splat0;
+i¸:@keywords{ :
+@args[ ;
+i˚:
+@rule[o;	;"visibility-visible-list;@;"visibility_visible_list;
+i˚o;;T;@;i ;[o;;"element-invisible;@;[ ;0;
+iˇ;{ ;[ ;
+i˛;[o;	;"visibility-hidden-list;@;"visibility_hidden_list;
+i˛u;&[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::Bool:@valueF;@:
+@linei;
+i:@operand1o:Sass::Script::Variable	:
+@name"%include-table-visibility-classes;@:@underscored_name"%include_table_visibility_classes;
+i:@operator:neq0[
+o:Sass::Tree::RuleNode:@has_childrenT;@:
+@tabsi :@children[o:Sass::Tree::PropNode;["display;	o:Sass::Script::String:
+@type:identifier;	"
+table;@:@prop_syntax:new;@;i ;[ ;
+i;
+i:
+@rule[o;	;"visibility-table-list;@;"visibility_table_list;
+io;;T;@;i ;[o;;["display;	o;;;;	""table-header-group !important;@;;;@;i ;[ ;
+i;
+i;[o;	;"'visibility-table-header-group-list;@;"'visibility_table_header_group_list;
+io;;T;@;i ;[o;;["display;	o;;;;	"table-row-group !important;@;;;@;i ;[ ;
+i
+;
+i	;[o;	;"$visibility-table-row-group-list;@;"$visibility_table_row_group_list;
+i	o;;T;@;i ;[o;;["display;	o;;;;	"table-row !important;@;;;@;i ;[ ;
+i;
+i;[o;	;"visibility-table-row-list;@;"visibility_table_row_list;
+io;;T;@;i ;[o;;["display;	o;;;;	"table-cell !important;@;;;@;i ;[ ;
+i;
+i;[o;	;"visibility-table-cell-list;@;"visibility_table_cell_list;
+i:@query[o;;"nth;@;0;iÛ; { ;![o;	;""visibility-breakpoint-queries;@;""visibility_breakpoint_queries;iÛo;;"
+index;@;0;iÛ; { ;![o;	;" visibility-breakpoint-sizes;@;" visibility_breakpoint_sizes;iÛo;	;""current-visibility-breakpoint;@;""current_visibility_breakpoint;iÛ;iÛ;i';'o;	;" visibility-breakpoint-sizes;@;" visibility_breakpoint_sizes;i';0;i&;![ u;&ïC[o:Sass::Script::Operation
+:@options{ :@operand2o:Sass::Script::Bool:@valueF;@:
+@linei;
+i:@operand1o:Sass::Script::Variable	:
+@name"$include-html-visibility-classes;@:@underscored_name"$include_html_visibility_classes;
+i:@operator:neq0[%o:Sass::Tree::MixinNode;"visibility-loop;@:@children[ :@splat0;
+i:@keywords{ :
+@args[ o:Sass::Tree::CommentNode
+:
+@type:normal;	[" /* Orientation targeting */;@;[ ;
+io:Sass::Tree::RuleNode:@has_childrenT;@:
+@tabsi ;[o:Sass::Tree::PropNode;["display;	o:Sass::Script::String;:identifier;	"inherit !important;@:@prop_syntax:new;@;i ;[ ;
+i;
+i:
+@rule["..show-for-landscape,
+  .hide-for-portrait:@parsed_ruleso:"Sass::Selector::CommaSequence:@filename" ;
+i:@members[o:Sass::Selector::Sequence;%[o:#Sass::Selector::SimpleSequence
+;$@!:@sourceso:Set:
+@hash{ ;
+i:@subject0;%[o:Sass::Selector::Class;["show-for-landscape;$@!;
+io;&;%["
+o;'
+;$@!;(o;);*{ ;
+i;+0;%[o;,;["hide-for-portrait;$@!;
+io;;T;@;i ;[o;;["display;	o;;;;	"none !important;@;; ;@;i ;[ ;
+i ;
+i ;!["..hide-for-landscape,
+  .show-for-portrait;"o;#;$" ;
+i ;%[o;&;%[o;'
+;$@A;(o;);*{ ;
+i ;+0;%[o;,;["hide-for-landscape;$@A;
+i o;&;%["
+o;'
+;$@A;(o;);*{ ;
+i ;+0;%[o;,;["show-for-portrait;$@A;
+i o;
+;;;	[")/* Specific visibility for tables */;@;[ ;
+i"o;;T;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	"
+table;@;; ;@;i ;[ ;
+i%;
+i%;!["2&.hide-for-landscape,
+    &.show-for-portrait;"o;#;$" ;
+i%;%[o;&;%[o;'
+;$@g;(o;);*{ ;
+i%;+0;%[o:Sass::Selector::Parent;$@g;
+i%o;,;["hide-for-landscape;$@g;
+i%o;&;%["
+o;'
+;$@g;(o;);*{ ;
+i%;+0;%[o;-;$@g;
+i%o;,;["show-for-portrait;$@g;
+i%;
+i#;!["
+table;"o;#;$" ;
+i#;%[o;&;%[o;'
+;$@|;(o;);*{ ;
+i#;+0;%[o:Sass::Selector::Element	;["
+table;$@|;
+i#:@namespace0o;;T;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	""table-header-group !important;@;; ;@;i ;[ ;
+i);
+i);!["2&.hide-for-landscape,
+    &.show-for-portrait;"o;#;$" ;
+i);%[o;&;%[o;'
+;$@î;(o;);*{ ;
+i);+0;%[o;-;$@î;
+i)o;,;["hide-for-landscape;$@î;
+i)o;&;%["
+o;'
+;$@î;(o;);*{ ;
+i);+0;%[o;-;$@î;
+i)o;,;["show-for-portrait;$@î;
+i);
+i';!["
+thead;"o;#;$" ;
+i';%[o;&;%[o;'
+;$@Æ;(o;);*{ ;
+i';+0;%[o;.	;["
+thead;$@Æ;
+i';/0o;;T;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	"table-row-group !important;@;; ;@;i ;[ ;
+i-;
+i-;!["2&.hide-for-landscape,
+    &.show-for-portrait;"o;#;$" ;
+i-;%[o;&;%[o;'
+;$@∆;(o;);*{ ;
+i-;+0;%[o;-;$@∆;
+i-o;,;["hide-for-landscape;$@∆;
+i-o;&;%["
+o;'
+;$@∆;(o;);*{ ;
+i-;+0;%[o;-;$@∆;
+i-o;,;["show-for-portrait;$@∆;
+i-;
+i+;!["
+tbody;"o;#;$" ;
+i+;%[o;&;%[o;'
+;$@‡;(o;);*{ ;
+i+;+0;%[o;.	;["
+tbody;$@‡;
+i+;/0o;;T;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	"table-row !important;@;; ;@;i ;[ ;
+i1;
+i1;!["2&.hide-for-landscape,
+    &.show-for-portrait;"o;#;$" ;
+i1;%[o;&;%[o;'
+;$@¯;(o;);*{ ;
+i1;+0;%[o;-;$@¯;
+i1o;,;["hide-for-landscape;$@¯;
+i1o;&;%["
+o;'
+;$@¯;(o;);*{ ;
+i1;+0;%[o;-;$@¯;
+i1o;,;["show-for-portrait;$@¯;
+i1;
+i/;!["tr;"o;#;$" ;
+i/;%[o;&;%[o;'
+;$@;(o;);*{ ;
+i/;+0;%[o;.	;["tr;$@;
+i/;/0o;;T;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	"table-cell !important;@;; ;@;i ;[ ;
+i6;
+i6;!["2&.hide-for-landscape,
+    &.show-for-portrait;"o;#;$" ;
+i6;%[o;&;%[o;'
+;$@*;(o;);*{ ;
+i6;+0;%[o;-;$@*;
+i6o;,;["hide-for-landscape;$@*;
+i6o;&;%["
+o;'
+;$@*;(o;);*{ ;
+i6;+0;%[o;-;$@*;
+i6o;,;["show-for-portrait;$@*;
+i6;
+i4;!["td,
+  th;"o;#;$" ;
+i4;%[o;&;%[o;'
+;$@D;(o;);*{ ;
+i4;+0;%[o;.	;["td;$@D;
+i4;/0o;&;%["
+o;'
+;$@D;(o;);*{ ;
+i4;+0;%[o;.	;["th;$@D;
+i4;/0o:Sass::Tree::MediaNode;T;	" ;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	"inherit !important;@;; ;@;i ;[ ;
+i;;
+i;;!["0.show-for-landscape,
+    .hide-for-portrait;"o;#;$" ;
+i;;%[o;&;%[o;'
+;$@g;(o;);*{ ;
+i;;+0;%[o;,;["show-for-landscape;$@g;
+i;o;&;%["
+o;'
+;$@g;(o;);*{ ;
+i;;+0;%[o;,;["hide-for-portrait;$@g;
+i;o;;T;@;i ;[o;;["display;	o;;;;	"none !important;@;; ;@;i ;[ ;
+i=;
+i=;!["0.hide-for-landscape,
+    .show-for-portrait;"o;#;$" ;
+i=;%[o;&;%[o;'
+;$@á;(o;);*{ ;
+i=;+0;%[o;,;["hide-for-landscape;$@á;
+i=o;&;%["
+o;'
+;$@á;(o;);*{ ;
+i=;+0;%[o;,;["show-for-portrait;$@á;
+i=o;
+;;;	[")/* Specific visibility for tables */;@;[ ;
+i?o;;T;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	"
+table;@;; ;@;i ;[ ;
+iB;
+iB;!["4&.show-for-landscape,
+      &.hide-for-portrait;"o;#;$" ;
+iB;%[o;&;%[o;'
+;$@≠;(o;);*{ ;
+iB;+0;%[o;-;$@≠;
+iBo;,;["show-for-landscape;$@≠;
+iBo;&;%["
+o;'
+;$@≠;(o;);*{ ;
+iB;+0;%[o;-;$@≠;
+iBo;,;["hide-for-portrait;$@≠;
+iB;
+i@;!["
+table;"o;#;$" ;
+i@;%[o;&;%[o;'
+;$@«;(o;);*{ ;
+i@;+0;%[o;.	;["
+table;$@«;
+i@;/0o;;T;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	""table-header-group !important;@;; ;@;i ;[ ;
+iF;
+iF;!["4&.show-for-landscape,
+      &.hide-for-portrait;"o;#;$" ;
+iF;%[o;&;%[o;'
+;$@ﬂ;(o;);*{ ;
+iF;+0;%[o;-;$@ﬂ;
+iFo;,;["show-for-landscape;$@ﬂ;
+iFo;&;%["
+o;'
+;$@ﬂ;(o;);*{ ;
+iF;+0;%[o;-;$@ﬂ;
+iFo;,;["hide-for-portrait;$@ﬂ;
+iF;
+iD;!["
+thead;"o;#;$" ;
+iD;%[o;&;%[o;'
+;$@˘;(o;);*{ ;
+iD;+0;%[o;.	;["
+thead;$@˘;
+iD;/0o;;T;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	"table-row-group !important;@;; ;@;i ;[ ;
+iJ;
+iJ;!["4&.show-for-landscape,
+      &.hide-for-portrait;"o;#;$" ;
+iJ;%[o;&;%[o;'
+;$@;(o;);*{ ;
+iJ;+0;%[o;-;$@;
+iJo;,;["show-for-landscape;$@;
+iJo;&;%["
+o;'
+;$@;(o;);*{ ;
+iJ;+0;%[o;-;$@;
+iJo;,;["hide-for-portrait;$@;
+iJ;
+iH;!["
+tbody;"o;#;$" ;
+iH;%[o;&;%[o;'
+;$@+;(o;);*{ ;
+iH;+0;%[o;.	;["
+tbody;$@+;
+iH;/0o;;T;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	"table-row !important;@;; ;@;i ;[ ;
+iN;
+iN;!["4&.show-for-landscape,
+      &.hide-for-portrait;"o;#;$" ;
+iN;%[o;&;%[o;'
+;$@C;(o;);*{ ;
+iN;+0;%[o;-;$@C;
+iNo;,;["show-for-landscape;$@C;
+iNo;&;%["
+o;'
+;$@C;(o;);*{ ;
+iN;+0;%[o;-;$@C;
+iNo;,;["hide-for-portrait;$@C;
+iN;
+iL;!["tr;"o;#;$" ;
+iL;%[o;&;%[o;'
+;$@];(o;);*{ ;
+iL;+0;%[o;.	;["tr;$@];
+iL;/0o;;T;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	"table-cell !important;@;; ;@;i ;[ ;
+iS;
+iS;!["4&.show-for-landscape,
+      &.hide-for-portrait;"o;#;$" ;
+iS;%[o;&;%[o;'
+;$@u;(o;);*{ ;
+iS;+0;%[o;-;$@u;
+iSo;,;["show-for-landscape;$@u;
+iSo;&;%["
+o;'
+;$@u;(o;);*{ ;
+iS;+0;%[o;-;$@u;
+iSo;,;["hide-for-portrait;$@u;
+iS;
+iQ;!["td,
+    th;"o;#;$" ;
+iQ;%[o;&;%[o;'
+;$@è;(o;);*{ ;
+iQ;+0;%[o;.	;["td;$@è;
+iQ;/0o;&;%["
+o;'
+;$@è;(o;);*{ ;
+iQ;+0;%[o;.	;["th;$@è;
+iQ;/0:@query[o;	;"landscape;@;"landscape;
+i9;
+i9o;0;T;	" ;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	"inherit !important;@;; ;@;i ;[ ;
+iY;
+iY;!["0.show-for-portrait,
+    .hide-for-landscape;"o;#;$" ;
+iY;%[o;&;%[o;'
+;$@∂;(o;);*{ ;
+iY;+0;%[o;,;["show-for-portrait;$@∂;
+iYo;&;%["
+o;'
+;$@∂;(o;);*{ ;
+iY;+0;%[o;,;["hide-for-landscape;$@∂;
+iYo;;T;@;i ;[o;;["display;	o;;;;	"none !important;@;; ;@;i ;[ ;
+i[;
+i[;!["0.hide-for-portrait,
+    .show-for-landscape;"o;#;$" ;
+i[;%[o;&;%[o;'
+;$@÷;(o;);*{ ;
+i[;+0;%[o;,;["hide-for-portrait;$@÷;
+i[o;&;%["
+o;'
+;$@÷;(o;);*{ ;
+i[;+0;%[o;,;["show-for-landscape;$@÷;
+i[o;
+;;;	[")/* Specific visibility for tables */;@;[ ;
+i]o;;T;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	"
+table;@;; ;@;i ;[ ;
+i`;
+i`;!["4&.show-for-portrait,
+      &.hide-for-landscape;"o;#;$" ;
+i`;%[o;&;%[o;'
+;$@¸;(o;);*{ ;
+i`;+0;%[o;-;$@¸;
+i`o;,;["show-for-portrait;$@¸;
+i`o;&;%["
+o;'
+;$@¸;(o;);*{ ;
+i`;+0;%[o;-;$@¸;
+i`o;,;["hide-for-landscape;$@¸;
+i`;
+i^;!["
+table;"o;#;$" ;
+i^;%[o;&;%[o;'
+;$@;(o;);*{ ;
+i^;+0;%[o;.	;["
+table;$@;
+i^;/0o;;T;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	""table-header-group !important;@;; ;@;i ;[ ;
+id;
+id;!["4&.show-for-portrait,
+      &.hide-for-landscape;"o;#;$" ;
+id;%[o;&;%[o;'
+;$@.;(o;);*{ ;
+id;+0;%[o;-;$@.;
+ido;,;["show-for-portrait;$@.;
+ido;&;%["
+o;'
+;$@.;(o;);*{ ;
+id;+0;%[o;-;$@.;
+ido;,;["hide-for-landscape;$@.;
+id;
+ib;!["
+thead;"o;#;$" ;
+ib;%[o;&;%[o;'
+;$@H;(o;);*{ ;
+ib;+0;%[o;.	;["
+thead;$@H;
+ib;/0o;;T;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	"table-row-group !important;@;; ;@;i ;[ ;
+ih;
+ih;!["4&.show-for-portrait,
+      &.hide-for-landscape;"o;#;$" ;
+ih;%[o;&;%[o;'
+;$@`;(o;);*{ ;
+ih;+0;%[o;-;$@`;
+iho;,;["show-for-portrait;$@`;
+iho;&;%["
+o;'
+;$@`;(o;);*{ ;
+ih;+0;%[o;-;$@`;
+iho;,;["hide-for-landscape;$@`;
+ih;
+if;!["
+tbody;"o;#;$" ;
+if;%[o;&;%[o;'
+;$@z;(o;);*{ ;
+if;+0;%[o;.	;["
+tbody;$@z;
+if;/0o;;T;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	"table-row !important;@;; ;@;i ;[ ;
+il;
+il;!["4&.show-for-portrait,
+      &.hide-for-landscape;"o;#;$" ;
+il;%[o;&;%[o;'
+;$@í;(o;);*{ ;
+il;+0;%[o;-;$@í;
+ilo;,;["show-for-portrait;$@í;
+ilo;&;%["
+o;'
+;$@í;(o;);*{ ;
+il;+0;%[o;-;$@í;
+ilo;,;["hide-for-landscape;$@í;
+il;
+ij;!["tr;"o;#;$" ;
+ij;%[o;&;%[o;'
+;$@¨;(o;);*{ ;
+ij;+0;%[o;.	;["tr;$@¨;
+ij;/0o;;T;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	"table-cell !important;@;; ;@;i ;[ ;
+iq;
+iq;!["4&.show-for-portrait,
+      &.hide-for-landscape;"o;#;$" ;
+iq;%[o;&;%[o;'
+;$@ƒ;(o;);*{ ;
+iq;+0;%[o;-;$@ƒ;
+iqo;,;["show-for-portrait;$@ƒ;
+iqo;&;%["
+o;'
+;$@ƒ;(o;);*{ ;
+iq;+0;%[o;-;$@ƒ;
+iqo;,;["hide-for-landscape;$@ƒ;
+iq;
+io;!["td,
+    th;"o;#;$" ;
+io;%[o;&;%[o;'
+;$@ﬁ;(o;);*{ ;
+io;+0;%[o;.	;["td;$@ﬁ;
+io;/0o;&;%["
+o;'
+;$@ﬁ;(o;);*{ ;
+io;+0;%[o;.	;["th;$@ﬁ;
+io;/0;1[o;	;"portrait;@;"portrait;
+iW;
+iWo;
+;;;	[")/* Touch-enabled device targeting */;@;[ ;
+iuo;;T;@;i ;[o;;["display;	o;;;;	"none !important;@;; ;@;i ;[ ;
+iv;
+iv;![".show-for-touch;"o;#;$" ;
+iv;%[o;&;%[o;'
+;$@;(o;);*{ ;
+iv;+0;%[o;,;["show-for-touch;$@;
+ivo;;T;@;i ;[o;;["display;	o;;;;	"inherit !important;@;; ;@;i ;[ ;
+iw;
+iw;![".hide-for-touch;"o;#;$" ;
+iw;%[o;&;%[o;'
+;$@;(o;);*{ ;
+iw;+0;%[o;,;["hide-for-touch;$@;
+iwo;;T;@;i ;[o;;["display;	o;;;;	"inherit !important;@;; ;@;i ;[ ;
+ix;
+ix;![".touch .show-for-touch;"o;#;$" ;
+ix;%[o;&;%[o;'
+;$@2;(o;);*{ ;
+ix;+0;%[o;,;["
+touch;$@2;
+ixo;'
+;$@2;(o;);*{ ;
+ix;+0;%[o;,;["show-for-touch;$@2;
+ixo;;T;@;i ;[o;;["display;	o;;;;	"none !important;@;; ;@;i ;[ ;
+iy;
+iy;![".touch .hide-for-touch;"o;#;$" ;
+iy;%[o;&;%[o;'
+;$@O;(o;);*{ ;
+iy;+0;%[o;,;["
+touch;$@O;
+iyo;'
+;$@O;(o;);*{ ;
+iy;+0;%[o;,;["hide-for-touch;$@O;
+iyo;
+;;;	[")/* Specific visibility for tables */;@;[ ;
+i{o;;T;@;i ;[o;;["display;	o;;;;	"
+table;@;; ;@;i ;[ ;
+i|;
+i|;!["table.hide-for-touch;"o;#;$" ;
+i|;%[o;&;%[o;'
+;$@p;(o;);*{ ;
+i|;+0;%[o;.	;["
+table;$@p;
+i|;/0o;,;["hide-for-touch;$@p;
+i|o;;T;@;i ;[o;;["display;	o;;;;	"
+table;@;; ;@;i ;[ ;
+i};
+i};![" .touch table.show-for-touch;"o;#;$" ;
+i};%[o;&;%[o;'
+;$@â;(o;);*{ ;
+i};+0;%[o;,;["
+touch;$@â;
+i}o;'
+;$@â;(o;);*{ ;
+i};+0;%[o;.	;["
+table;$@â;
+i};/0o;,;["show-for-touch;$@â;
+i}o;;T;@;i ;[o;;["display;	o;;;;	""table-header-group !important;@;; ;@;i ;[ ;
+i~;
+i~;!["thead.hide-for-touch;"o;#;$" ;
+i~;%[o;&;%[o;'
+;$@©;(o;);*{ ;
+i~;+0;%[o;.	;["
+thead;$@©;
+i~;/0o;,;["hide-for-touch;$@©;
+i~o;;T;@;i ;[o;;["display;	o;;;;	""table-header-group !important;@;; ;@;i ;[ ;
+i;
+i;![" .touch thead.show-for-touch;"o;#;$" ;
+i;%[o;&;%[o;'
+;$@¬;(o;);*{ ;
+i;+0;%[o;,;["
+touch;$@¬;
+io;'
+;$@¬;(o;);*{ ;
+i;+0;%[o;.	;["
+thead;$@¬;
+i;/0o;,;["show-for-touch;$@¬;
+io;;T;@;i ;[o;;["display;	o;;;;	"table-row-group !important;@;; ;@;i ;[ ;
+iÄ;
+iÄ;!["tbody.hide-for-touch;"o;#;$" ;
+iÄ;%[o;&;%[o;'
+;$@‚;(o;);*{ ;
+iÄ;+0;%[o;.	;["
+tbody;$@‚;
+iÄ;/0o;,;["hide-for-touch;$@‚;
+iÄo;;T;@;i ;[o;;["display;	o;;;;	"table-row-group !important;@;; ;@;i ;[ ;
+iÅ;
+iÅ;![" .touch tbody.show-for-touch;"o;#;$" ;
+iÅ;%[o;&;%[o;'
+;$@˚;(o;);*{ ;
+iÅ;+0;%[o;,;["
+touch;$@˚;
+iÅo;'
+;$@˚;(o;);*{ ;
+iÅ;+0;%[o;.	;["
+tbody;$@˚;
+iÅ;/0o;,;["show-for-touch;$@˚;
+iÅo;;T;@;i ;[o;;["display;	o;;;;	"table-row !important;@;; ;@;i ;[ ;
+iÇ;
+iÇ;!["tr.hide-for-touch;"o;#;$" ;
+iÇ;%[o;&;%[o;'
+;$@;(o;);*{ ;
+iÇ;+0;%[o;.	;["tr;$@;
+iÇ;/0o;,;["hide-for-touch;$@;
+iÇo;;T;@;i ;[o;;["display;	o;;;;	"table-row !important;@;; ;@;i ;[ ;
+iÉ;
+iÉ;![".touch tr.show-for-touch;"o;#;$" ;
+iÉ;%[o;&;%[o;'
+;$@4;(o;);*{ ;
+iÉ;+0;%[o;,;["
+touch;$@4;
+iÉo;'
+;$@4;(o;);*{ ;
+iÉ;+0;%[o;.	;["tr;$@4;
+iÉ;/0o;,;["show-for-touch;$@4;
+iÉo;;T;@;i ;[o;;["display;	o;;;;	"table-cell !important;@;; ;@;i ;[ ;
+iÑ;
+iÑ;!["td.hide-for-touch;"o;#;$" ;
+iÑ;%[o;&;%[o;'
+;$@T;(o;);*{ ;
+iÑ;+0;%[o;.	;["td;$@T;
+iÑ;/0o;,;["hide-for-touch;$@T;
+iÑo;;T;@;i ;[o;;["display;	o;;;;	"table-cell !important;@;; ;@;i ;[ ;
+iÖ;
+iÖ;![".touch td.show-for-touch;"o;#;$" ;
+iÖ;%[o;&;%[o;'
+;$@m;(o;);*{ ;
+iÖ;+0;%[o;,;["
+touch;$@m;
+iÖo;'
+;$@m;(o;);*{ ;
+iÖ;+0;%[o;.	;["td;$@m;
+iÖ;/0o;,;["show-for-touch;$@m;
+iÖo;;T;@;i ;[o;;["display;	o;;;;	"table-cell !important;@;; ;@;i ;[ ;
+iÜ;
+iÜ;!["th.hide-for-touch;"o;#;$" ;
+iÜ;%[o;&;%[o;'
+;$@ç;(o;);*{ ;
+iÜ;+0;%[o;.	;["th;$@ç;
+iÜ;/0o;,;["hide-for-touch;$@ç;
+iÜo;;T;@;i ;[o;;["display;	o;;;;	"table-cell !important;@;; ;@;i ;[ ;
+iá;
+iá;![".touch th.show-for-touch;"o;#;$" ;
+iá;%[o;&;%[o;'
+;$@¶;(o;);*{ ;
+iá;+0;%[o;,;["
+touch;$@¶;
+iáo;'
+;$@¶;(o;);*{ ;
+iá;+0;%[o;.	;["th;$@¶;
+iá;/0o;,;["show-for-touch;$@¶;
+iáo;
+;;;	["/* Print visibility */;@;[ ;
+iäo;0;T;	" ;@;i ;[o;;T;@;i ;[o;;["display;	o;;;;	"
+block;@;; ;@;i ;[ ;
+iå;
+iå;![".show-for-print;"o;#;$" ;
+iå;%[o;&;%[o;'
+;$@Õ;(o;);*{ ;
+iå;+0;%[o;,;["show-for-print;$@Õ;
+iåo;;T;@;i ;[o;;["display;	o;;;;	"	none;@;; ;@;i ;[ ;
+iç;
+iç;![".hide-for-print;"o;#;$" ;
+iç;%[o;&;%[o;'
+;$@„;(o;);*{ ;
+iç;+0;%[o;,;["hide-for-print;$@„;
+iço;;T;@;i ;[o;;["display;	o;;;;	"
+table;@;; ;@;i ;[ ;
+iè;
+iè;!["table.show-for-print;"o;#;$" ;
+iè;%[o;&;%[o;'
+;$@˘;(o;);*{ ;
+iè;+0;%[o;.	;["
+table;$@˘;
+iè;/0o;,;["show-for-print;$@˘;
+ièo;;T;@;i ;[o;;["display;	o;;;;	""table-header-group !important;@;; ;@;i ;[ ;
+iê;
+iê;!["thead.show-for-print;"o;#;$" ;
+iê;%[o;&;%[o;'
+;$@;(o;);*{ ;
+iê;+0;%[o;.	;["
+thead;$@;
+iê;/0o;,;["show-for-print;$@;
+iêo;;T;@;i ;[o;;["display;	o;;;;	"table-row-group !important;@;; ;@;i ;[ ;
+ië;
+ië;!["tbody.show-for-print;"o;#;$" ;
+ië;%[o;&;%[o;'
+;$@+;(o;);*{ ;
+ië;+0;%[o;.	;["
+tbody;$@+;
+ië;/0o;,;["show-for-print;$@+;
+iëo;;T;@;i ;[o;;["display;	o;;;;	"table-row !important;@;; ;@;i ;[ ;
+ií;
+ií;!["tr.show-for-print;"o;#;$" ;
+ií;%[o;&;%[o;'
+;$@D;(o;);*{ ;
+ií;+0;%[o;.	;["tr;$@D;
+ií;/0o;,;["show-for-print;$@D;
+iío;;T;@;i ;[o;;["display;	o;;;;	"table-cell !important;@;; ;@;i ;[ ;
+iì;
+iì;!["td.show-for-print;"o;#;$" ;
+iì;%[o;&;%[o;'
+;$@];(o;);*{ ;
+iì;+0;%[o;.	;["td;$@];
+iì;/0o;,;["show-for-print;$@];
+iìo;;T;@;i ;[o;;["display;	o;;;;	"table-cell !important;@;; ;@;i ;[ ;
+iî;
+iî;!["th.show-for-print;"o;#;$" ;
+iî;%[o;&;%[o;'
+;$@v;(o;);*{ ;
+iî;+0;%[o;.	;["th;$@v;
+iî;/0o;,;["show-for-print;$@v;
+iî;1["
+print;
+iã;i
