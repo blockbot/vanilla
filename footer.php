@@ -1,4 +1,18 @@
+            </div> <!-- end #content -->
+        
+            <footer data-template-url="<?php bloginfo("template_url"); ?>">
+
+                <p>Copyright &copy; 2011 - <?php echo date(Y); ?> Site Owner </p>
+
+            </footer> 
+
+        </div> <!-- end #container -->  
+
         <?php
+
+            // to make use of this update your .htaccess on your local machine 
+            // in your wordpress root directory to include:
+            // SetEnv APPLICATION_ENV development
 
             if(getenv('APPLICATION_ENV') == 'development'){
                 $js_directory = 'js';

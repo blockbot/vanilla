@@ -1,6 +1,8 @@
+@import "compass";
+
+@import "templates/_functions";
+@import "templates/_media-queries";
+
 @import "vendor/normalize";
 
-@import "foundation/foundation";
-@import "foundation/settings";
-
-@import "compass";
+@import "templates/_utility";
