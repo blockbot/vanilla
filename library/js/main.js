@@ -10,8 +10,8 @@ require.config({
 
 require(["jquery","interface/global"], function($, global){
 
-	console.log("global loaded");
-
+	global.init();
+	
 	//
 	// Lazyload and infinite scroll if wanted. Probably need to update for each specific site.
 	//

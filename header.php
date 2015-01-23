@@ -24,10 +24,47 @@
 
             <header>
 
-                <nav>
-                    <a href="<?php bloginfo("url"); ?>">Home</a>
-                </nav> 
+                <nav id="main">
 
+                    <a id="nav-bars" href="javascript:void(0);">
+                        
+                        <div class="nav-bar"></div>
+                        <div class="nav-bar"></div>
+                        <div class="nav-bar"></div>
+                    
+                    </a>
+
+                    <div id="nav-item-container">
+
+                        <?php 
+                            
+                            //get nav item data
+                            $nav = wp_get_nav_menu_items( "site-menu"); 
+                        
+                            // loop through nav item data and create the nav
+                            $nav_item_index = 0;
+                    
+                        ?>
+
+                        <?php foreach($nav as $nav_item): ?>
+
+                            <!-- on load first item should be set to active -->
+                            <a href="<?php echo $nav_item->url; ?>" 
+                                class="<?php echo $nav_item_index == 0 ?  'nav-home-active ' : ''; ?>btn-nav-home" 
+                                data-nav-id="<?php echo $nav_item->object_id; ?>">
+
+                                <?php echo $nav_item->title; ?>
+
+                            </a>
+
+                            <?php $nav_item_index++; ?>
+
+                        <?php endforeach; ?>
+
+                    </div>
+
+                </nav>
+            
             </header>
 
             <div id="content" class="clearfix">
